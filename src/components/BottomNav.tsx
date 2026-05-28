@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { Pressable, Text, View } from 'react-native';
 
 import { dashboardTabs, type TabKey } from '@/src/data/dashboardData';
@@ -13,6 +14,15 @@ export function BottomNav({
   activeTab: TabKey;
   onChange: (tab: TabKey) => void;
 }) {
+  const handlePress = (tab: TabKey) => {
+    if (tab === activeTab) {
+      return;
+    }
+
+    Haptics.selectionAsync();
+    onChange(tab);
+  };
+
   return (
     <View style={styles.bottomNav}>
       {dashboardTabs.map((tab) => {
@@ -22,7 +32,7 @@ export function BottomNav({
             key={tab.key}
             accessibilityRole="button"
             accessibilityState={{ selected: active }}
-            onPress={() => onChange(tab.key)}
+            onPress={() => handlePress(tab.key)}
             style={[styles.navButton, active && styles.navButtonActive]}
           >
             <Ionicons
