@@ -10,16 +10,20 @@ import { navigationStyles as styles } from '@/src/styles/navigationStyles';
 export function BottomNav({
   activeTab,
   onChange,
+  onReselect,
 }: {
   activeTab: TabKey;
   onChange: (tab: TabKey) => void;
+  onReselect: () => void;
 }) {
   const handlePress = (tab: TabKey) => {
+    Haptics.selectionAsync();
+
     if (tab === activeTab) {
+      onReselect();
       return;
     }
 
-    Haptics.selectionAsync();
     onChange(tab);
   };
 
