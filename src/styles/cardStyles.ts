@@ -44,4 +44,44 @@ export const cardStyles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '800',
   },
+  connectHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 8,
+  },
+  connectTitle: {
+    color: colors.text,
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  connectError: {
+    color: colors.rose,
+    fontSize: 12,
+    fontWeight: '700',
+    marginTop: 10,
+  },
+  connectButton: {
+    marginTop: 14,
+    minHeight: 44,
+    borderRadius: 12,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 14,
+  },
+  connectButtonDisabled: {
+    opacity: 0.45,
+  },
+  connectButtonText: {
+    color: '#ffffff',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  redirectHint: {
+    marginTop: 10,
+    color: colors.faint,
+    fontSize: 10,
+  },
 });

@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { Pressable, Text, View } from 'react-native';
 
-import { dashboardTabs, type TabKey } from '@/src/data/dashboardData';
+import { dashboardTabs, type TabKey } from '@/src/components/navigation/dashboardTabs';
 import { colors } from '@/src/theme/colors';
 
 import { navigationStyles as styles } from '@/src/styles/navigationStyles';

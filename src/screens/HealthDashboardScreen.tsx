@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { type TabKey } from '@/src/data/dashboardData';
+import { type TabKey } from '@/src/components/navigation/dashboardTabs';
 
 import { BottomNav } from '@/src/components/BottomNav';
 import { TopBar } from '@/src/components/TopBar';

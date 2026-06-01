@@ -1,5 +1,5 @@
-import { HealthDashboardScreen } from '@/src/screens/HealthDashboardScreen';
+import { AuthGate } from '@/src/screens/AuthGate';
 
 export default function HomeScreen() {
-  return <HealthDashboardScreen />;
+  return <AuthGate />;
 }
