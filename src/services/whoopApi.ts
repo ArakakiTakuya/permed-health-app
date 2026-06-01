@@ -26,6 +26,18 @@ export type WhoopRecoveryMetrics = {
   sleepScore?: number;
   sleepConsistencyPercentage?: number;
   sleepEfficiencyPercentage?: number;
+  sleepStartAt?: string;
+  sleepEndAt?: string;
+  sleepStatus?: string;
+  isNap?: boolean;
+  totalInBedTimeMilli?: number;
+  totalAwakeTimeMilli?: number;
+  totalLightSleepTimeMilli?: number;
+  totalSlowWaveSleepTimeMilli?: number;
+  totalRemSleepTimeMilli?: number;
+  disturbanceCount?: number;
+  sleepNeedMilli?: number;
+  sleepDebtMilli?: number;
   dayStrain?: number;
   caloriesBurned?: number;
   averageHeartRate?: number;
@@ -117,6 +129,23 @@ function normalizeRecovery(payload: unknown): WhoopRecoveryMetrics {
     sleepEfficiencyPercentage:
       getNumber(sleepRecord.sleepEfficiencyPercentage) ??
       getNumber(sleepRecord.sleep_efficiency_percentage),
+    sleepStartAt: getString(sleepRecord.startAt) ?? getString(sleepRecord.start_at),
+    sleepEndAt: getString(sleepRecord.endAt) ?? getString(sleepRecord.end_at),
+    sleepStatus: getString(sleepRecord.status),
+    isNap: getBoolean(sleepRecord.nap),
+    totalInBedTimeMilli: getNumber(sleepRecord.totalInBedTimeMilli),
+    totalAwakeTimeMilli: getNumber(sleepRecord.totalAwakeTimeMilli),
+    totalLightSleepTimeMilli: getNumber(sleepRecord.totalLightSleepTimeMilli),
+    totalSlowWaveSleepTimeMilli: getNumber(sleepRecord.totalSlowWaveSleepTimeMilli),
+    totalRemSleepTimeMilli: getNumber(sleepRecord.totalRemSleepTimeMilli),
+    disturbanceCount: getNumber(sleepRecord.disturbanceCount),
+    sleepNeedMilli: sumNumbers(
+      sleepRecord.sleepNeedBaselineMilli,
+      sleepRecord.sleepNeedFromDebtMilli,
+      sleepRecord.sleepNeedFromRecentStrainMilli,
+      sleepRecord.sleepNeedFromRecentNapMilli,
+    ),
+    sleepDebtMilli: getNumber(sleepRecord.sleepNeedFromDebtMilli),
     dayStrain: getNumber(cycleRecord.strain),
     caloriesBurned: toCalories(getNumber(cycleRecord.kilojoule)),
     averageHeartRate:
@@ -206,6 +235,20 @@ function getString(value: unknown) {
   return typeof value === 'string' && value ? value : undefined;
 }
 
+function getBoolean(value: unknown) {
+  return typeof value === 'boolean' ? value : undefined;
+}
+
 function toCalories(kilojoule: number | undefined) {
   return typeof kilojoule === 'number' ? kilojoule / 4.184 : undefined;
+}
+
+function sumNumbers(...values: unknown[]) {
+  const numbers = values.map(getNumber);
+
+  if (numbers.every((value) => typeof value !== 'number')) {
+    return undefined;
+  }
+
+  return numbers.reduce<number>((total, value) => total + (value ?? 0), 0);
 }

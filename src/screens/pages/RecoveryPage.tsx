@@ -5,15 +5,19 @@ import { Ring } from '@/src/components/dashboard/charts';
 import { HeroStat } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
 import { WhoopConnectCard } from '@/src/components/WhoopConnectCard';
-import { useWhoopRecovery } from '@/src/hooks/useWhoopRecovery';
+import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
 import { colors } from '@/src/theme/colors';
 
 import { heroStyles } from '@/src/styles/heroStyles';
 import { layoutStyles as styles } from '@/src/styles/layoutStyles';
 
-export function RecoveryPage() {
-  const { recovery, syncAndRefreshRecovery } = useWhoopRecovery();
-
+export function RecoveryPage({
+  dashboard: recovery,
+  onConnected,
+}: {
+  dashboard: WhoopRecoveryMetrics;
+  onConnected: () => Promise<void>;
+}) {
   return (
     <View style={styles.panel}>
       <SectionHeader color={colors.rose} title="Recovery" subtitle="WHOOP · Today" />
@@ -46,7 +50,7 @@ export function RecoveryPage() {
           label="Sleep"
         />
       </View>
-      <WhoopConnectCard onConnected={syncAndRefreshRecovery} />
+      <WhoopConnectCard onConnected={onConnected} />
       <StatsCard
         title="WHOOP Metrics"
         rows={[
