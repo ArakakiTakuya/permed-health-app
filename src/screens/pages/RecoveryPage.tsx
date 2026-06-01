@@ -1,11 +1,10 @@
 import { Text, View } from 'react-native';
 
-import { Card, StatsCard } from '@/src/components/dashboard/cards';
-import { BarChart, Ring } from '@/src/components/dashboard/charts';
-import { HeroStat, Label } from '@/src/components/dashboard/metricWidgets';
+import { StatsCard } from '@/src/components/dashboard/cards';
+import { Ring } from '@/src/components/dashboard/charts';
+import { HeroStat } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
 import { WhoopConnectCard } from '@/src/components/WhoopConnectCard';
-import { trendData } from '@/src/data/dashboardData';
 import { useWhoopRecovery } from '@/src/hooks/useWhoopRecovery';
 import { colors } from '@/src/theme/colors';
 
@@ -13,7 +12,7 @@ import { heroStyles } from '@/src/styles/heroStyles';
 import { layoutStyles as styles } from '@/src/styles/layoutStyles';
 
 export function RecoveryPage() {
-  const { recovery, refreshRecovery } = useWhoopRecovery();
+  const { recovery, syncAndRefreshRecovery } = useWhoopRecovery();
 
   return (
     <View style={styles.panel}>
@@ -36,23 +35,23 @@ export function RecoveryPage() {
         </View>
       </View>
       <View style={styles.ringRow}>
-        <Ring score={Math.round(recovery.score ?? 0)} color={colors.primary} label="Recovery" />
-        <Ring score={73} color={colors.violet} label="Sleep" />
-        <Ring score={68} color={colors.amber} label="Activity" />
+        <Ring
+          score={typeof recovery.score === 'number' ? Math.round(recovery.score) : undefined}
+          color={colors.primary}
+          label="Recovery"
+        />
+        <Ring color={colors.violet} label="Sleep" />
+        <Ring color={colors.amber} label="Activity" />
       </View>
-      <WhoopConnectCard onConnected={refreshRecovery} />
-      <Card accent={colors.rose}>
-        <Label color={colors.rose}>Weekly Strain</Label>
-        <BarChart data={trendData.strain} color={colors.rose} />
-      </Card>
+      <WhoopConnectCard onConnected={syncAndRefreshRecovery} />
       <StatsCard
         title="WHOOP Metrics"
         rows={[
-          ['Day Strain', '13.7', colors.rose],
+          ['Day Strain', '--', colors.rose],
           ['Respiratory Rate', formatMetric(recovery.respiratoryRate, 'rpm', 1), colors.sky],
-          ['Skin Temp', '36.4 C', colors.amber],
-          ['Blood Oxygen', '98%', colors.sage],
-          ['Calories Burned', '2,340 kcal', colors.text],
+          ['Skin Temp', formatMetric(recovery.skinTempCelsius, 'C', 1), colors.amber],
+          ['Blood Oxygen', formatMetric(recovery.spo2Percentage, '%'), colors.sage],
+          ['Calories Burned', '--', colors.text],
         ]}
       />
     </View>

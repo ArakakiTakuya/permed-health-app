@@ -19,6 +19,8 @@ export type WhoopRecoveryMetrics = {
   hrvMs?: number;
   restingHeartRate?: number;
   respiratoryRate?: number;
+  spo2Percentage?: number;
+  skinTempCelsius?: number;
   status: string;
 };
 
@@ -45,32 +47,72 @@ export async function getLatestWhoopRecovery() {
   return normalizeRecovery(data.recovery ?? data.data ?? data);
 }
 
+export async function syncWhoopRecovery() {
+  await apiFetch('/api/whoop/recovery/sync', {
+    method: 'POST',
+  });
+}
+
 function normalizeRecovery(payload: unknown): WhoopRecoveryMetrics {
-  const record = asRecord(payload);
-  const scoreRecord = asRecord(record.score);
+  const payloadRecord = asRecord(payload);
+  const record = getRecoveryRecord(payloadRecord);
+  const rawRecord = asJsonRecord(record.raw);
+  const recoveryRecord = {
+    ...rawRecord,
+    ...record,
+  };
+  const scoreRecord = {
+    ...asRecord(rawRecord.score),
+    ...asRecord(record.score),
+  };
   const recoveryScore =
-    getNumber(record.recoveryScore) ??
-    getNumber(record.recovery_score) ??
-    getNumber(record.score) ??
+    getNumber(recoveryRecord.recoveryScore) ??
+    getNumber(recoveryRecord.recovery_score) ??
+    getNumber(recoveryRecord.score) ??
     getNumber(scoreRecord.recovery_score) ??
     getNumber(scoreRecord.recoveryScore);
 
   return {
     score: recoveryScore,
     hrvMs:
-      getNumber(record.hrvMs) ??
-      getNumber(record.hrv_ms) ??
+      getNumber(recoveryRecord.hrvMs) ??
+      getNumber(recoveryRecord.hrv_ms) ??
+      getNumber(recoveryRecord.hrvRmssdMilli) ??
       getNumber(scoreRecord.hrv_rmssd_milli),
     restingHeartRate:
-      getNumber(record.restingHeartRate) ??
-      getNumber(record.resting_heart_rate) ??
+      getNumber(recoveryRecord.restingHeartRate) ??
+      getNumber(recoveryRecord.resting_heart_rate) ??
       getNumber(scoreRecord.resting_heart_rate),
     respiratoryRate:
-      getNumber(record.respiratoryRate) ??
-      getNumber(record.respiratory_rate) ??
+      getNumber(recoveryRecord.respiratoryRate) ??
+      getNumber(recoveryRecord.respiratory_rate) ??
       getNumber(scoreRecord.respiratory_rate),
-    status: getRecoveryStatus(record, scoreRecord, recoveryScore),
+    spo2Percentage:
+      getNumber(recoveryRecord.spo2Percentage) ??
+      getNumber(recoveryRecord.spo2_percentage) ??
+      getNumber(scoreRecord.spo2_percentage),
+    skinTempCelsius:
+      getNumber(recoveryRecord.skinTempCelsius) ??
+      getNumber(recoveryRecord.skin_temp_celsius) ??
+      getNumber(scoreRecord.skin_temp_celsius),
+    status: getRecoveryStatus(recoveryRecord, scoreRecord, recoveryScore),
   };
+}
+
+function getRecoveryRecord(record: Record<string, unknown>) {
+  const nestedRecord = asRecord(record.recovery);
+
+  if (Object.keys(nestedRecord).length) {
+    return nestedRecord;
+  }
+
+  const dataRecord = asRecord(record.data);
+
+  if (Object.keys(dataRecord).length) {
+    return getRecoveryRecord(dataRecord);
+  }
+
+  return record;
 }
 
 function getRecoveryStatus(
@@ -111,6 +153,18 @@ function asRecord(value: unknown): Record<string, unknown> {
   }
 
   return {};
+}
+
+function asJsonRecord(value: unknown) {
+  if (typeof value !== 'string') {
+    return asRecord(value);
+  }
+
+  try {
+    return asRecord(JSON.parse(value));
+  } catch {
+    return {};
+  }
 }
 
 function getNumber(value: unknown) {

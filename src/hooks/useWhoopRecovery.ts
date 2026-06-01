@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { getLatestWhoopRecovery, type WhoopRecoveryMetrics } from '@/src/services/whoopApi';
+import {
+  getLatestWhoopRecovery,
+  syncWhoopRecovery,
+  type WhoopRecoveryMetrics,
+} from '@/src/services/whoopApi';
 
 const EMPTY_RECOVERY: WhoopRecoveryMetrics = {
   status: '--',
@@ -25,6 +29,11 @@ export function useWhoopRecovery() {
     }
   }, []);
 
+  const syncAndRefreshRecovery = useCallback(async () => {
+    await syncWhoopRecovery();
+    await refreshRecovery();
+  }, [refreshRecovery]);
+
   useEffect(() => {
     refreshRecovery();
   }, [refreshRecovery]);
@@ -34,5 +43,6 @@ export function useWhoopRecovery() {
     isLoading,
     recovery,
     refreshRecovery,
+    syncAndRefreshRecovery,
   };
 }

@@ -3,13 +3,13 @@ import { Text, View } from 'react-native';
 import { chartStyles as styles } from '@/src/styles/chartStyles';
 import { colors } from '@/src/theme/colors';
 
-export function Ring({ score, color, label }: { score: number; color: string; label?: string }) {
-  const remaining = Math.max(0, 100 - score);
+export function Ring({ score, color, label }: { score?: number; color: string; label?: string }) {
+  const remaining = Math.max(0, 100 - (score ?? 0));
   return (
     <View style={styles.ringWrap}>
       <View style={[styles.ring, { borderColor: color }]}>
         <View style={[styles.ringGap, { borderTopColor: colors.border, transform: [{ rotate: `${remaining * 1.8}deg` }] }]} />
-        <Text style={styles.ringScore}>{score}</Text>
+        <Text style={styles.ringScore}>{score ?? '--'}</Text>
       </View>
       {label ? <Text style={styles.ringLabel}>{label}</Text> : null}
     </View>
