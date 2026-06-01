@@ -6,7 +6,9 @@ type WhoopConnectSessionResponse = {
 };
 
 type LatestWhoopRecoveryResponse = {
+  cycle?: unknown;
   recovery?: unknown;
+  sleep?: unknown;
   data?: unknown;
   score?: unknown;
   hrvMs?: unknown;
@@ -21,6 +23,13 @@ export type WhoopRecoveryMetrics = {
   respiratoryRate?: number;
   spo2Percentage?: number;
   skinTempCelsius?: number;
+  sleepScore?: number;
+  sleepConsistencyPercentage?: number;
+  sleepEfficiencyPercentage?: number;
+  dayStrain?: number;
+  caloriesBurned?: number;
+  averageHeartRate?: number;
+  maxHeartRate?: number;
   status: string;
 };
 
@@ -40,15 +49,15 @@ export async function createWhoopConnectSession() {
   return data.url;
 }
 
-export async function getLatestWhoopRecovery() {
-  const response = await apiFetch('/api/whoop/recovery/latest');
+export async function getLatestWhoopDashboard() {
+  const response = await apiFetch('/api/whoop/dashboard/latest');
   const data = (await response.json()) as LatestWhoopRecoveryResponse;
 
-  return normalizeRecovery(data.recovery ?? data.data ?? data);
+  return normalizeRecovery(data);
 }
 
-export async function syncWhoopRecovery() {
-  await apiFetch('/api/whoop/recovery/sync', {
+export async function syncWhoopData() {
+  await apiFetch('/api/whoop/sync', {
     method: 'POST',
   });
 }
@@ -56,6 +65,8 @@ export async function syncWhoopRecovery() {
 function normalizeRecovery(payload: unknown): WhoopRecoveryMetrics {
   const payloadRecord = asRecord(payload);
   const record = getRecoveryRecord(payloadRecord);
+  const cycleRecord = asRecord(payloadRecord.cycle);
+  const sleepRecord = asRecord(payloadRecord.sleep);
   const rawRecord = asJsonRecord(record.raw);
   const recoveryRecord = {
     ...rawRecord,
@@ -84,6 +95,8 @@ function normalizeRecovery(payload: unknown): WhoopRecoveryMetrics {
       getNumber(recoveryRecord.resting_heart_rate) ??
       getNumber(scoreRecord.resting_heart_rate),
     respiratoryRate:
+      getNumber(sleepRecord.respiratoryRate) ??
+      getNumber(sleepRecord.respiratory_rate) ??
       getNumber(recoveryRecord.respiratoryRate) ??
       getNumber(recoveryRecord.respiratory_rate) ??
       getNumber(scoreRecord.respiratory_rate),
@@ -95,6 +108,21 @@ function normalizeRecovery(payload: unknown): WhoopRecoveryMetrics {
       getNumber(recoveryRecord.skinTempCelsius) ??
       getNumber(recoveryRecord.skin_temp_celsius) ??
       getNumber(scoreRecord.skin_temp_celsius),
+    sleepScore:
+      getNumber(sleepRecord.sleepPerformancePercentage) ??
+      getNumber(sleepRecord.sleep_performance_percentage),
+    sleepConsistencyPercentage:
+      getNumber(sleepRecord.sleepConsistencyPercentage) ??
+      getNumber(sleepRecord.sleep_consistency_percentage),
+    sleepEfficiencyPercentage:
+      getNumber(sleepRecord.sleepEfficiencyPercentage) ??
+      getNumber(sleepRecord.sleep_efficiency_percentage),
+    dayStrain: getNumber(cycleRecord.strain),
+    caloriesBurned: toCalories(getNumber(cycleRecord.kilojoule)),
+    averageHeartRate:
+      getNumber(cycleRecord.averageHeartRate) ??
+      getNumber(cycleRecord.average_heart_rate),
+    maxHeartRate: getNumber(cycleRecord.maxHeartRate) ?? getNumber(cycleRecord.max_heart_rate),
     status: getRecoveryStatus(recoveryRecord, scoreRecord, recoveryScore),
   };
 }
@@ -132,12 +160,6 @@ function getRecoveryStatus(
 
   if (scoreState === 'UNSCORABLE') {
     return 'Unavailable';
-  }
-
-  const explicitStatus = getString(record.status) ?? getString(scoreRecord.status);
-
-  if (explicitStatus) {
-    return explicitStatus;
   }
 
   if (typeof recoveryScore !== 'number') {
@@ -182,4 +204,8 @@ function getNumber(value: unknown) {
 
 function getString(value: unknown) {
   return typeof value === 'string' && value ? value : undefined;
+}
+
+function toCalories(kilojoule: number | undefined) {
+  return typeof kilojoule === 'number' ? kilojoule / 4.184 : undefined;
 }

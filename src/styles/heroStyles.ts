@@ -111,6 +111,9 @@ export const heroStyles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
   },
+  recoveryStatusPill: {
+    marginTop: 6,
+  },
   violetHero: {
     padding: 20,
     borderRadius: 20,

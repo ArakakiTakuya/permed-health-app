@@ -23,7 +23,7 @@ export function RecoveryPage() {
           <View style={styles.centerMetric}>
             <Text style={heroStyles.recoveryNumber}>{formatScore(recovery.score)}</Text>
             <Text style={heroStyles.heroText}>Recovery</Text>
-            <View style={heroStyles.whitePill}>
+            <View style={[heroStyles.whitePill, heroStyles.recoveryStatusPill]}>
               <Text style={heroStyles.whitePillText}>{recovery.status}</Text>
             </View>
           </View>
@@ -40,18 +40,21 @@ export function RecoveryPage() {
           color={colors.primary}
           label="Recovery"
         />
-        <Ring color={colors.violet} label="Sleep" />
-        <Ring color={colors.amber} label="Activity" />
+        <Ring
+          score={typeof recovery.sleepScore === 'number' ? Math.round(recovery.sleepScore) : undefined}
+          color={colors.violet}
+          label="Sleep"
+        />
       </View>
       <WhoopConnectCard onConnected={syncAndRefreshRecovery} />
       <StatsCard
         title="WHOOP Metrics"
         rows={[
-          ['Day Strain', '--', colors.rose],
+          ['Day Strain', formatMetric(recovery.dayStrain, '', 1), colors.rose],
           ['Respiratory Rate', formatMetric(recovery.respiratoryRate, 'rpm', 1), colors.sky],
           ['Skin Temp', formatMetric(recovery.skinTempCelsius, 'C', 1), colors.amber],
           ['Blood Oxygen', formatMetric(recovery.spo2Percentage, '%'), colors.sage],
-          ['Calories Burned', '--', colors.text],
+          ['Calories Burned', formatMetric(recovery.caloriesBurned, 'kcal'), colors.text],
         ]}
       />
     </View>
@@ -67,5 +70,5 @@ function formatMetric(value: number | undefined, unit: string, fractionDigits = 
     return '--';
   }
 
-  return `${value.toFixed(fractionDigits)} ${unit}`;
+  return [value.toFixed(fractionDigits), unit].filter(Boolean).join(' ');
 }

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import {
-  getLatestWhoopRecovery,
-  syncWhoopRecovery,
+  getLatestWhoopDashboard,
+  syncWhoopData,
   type WhoopRecoveryMetrics,
 } from '@/src/services/whoopApi';
 
@@ -20,7 +20,7 @@ export function useWhoopRecovery() {
     setIsLoading(true);
 
     try {
-      const latestRecovery = await getLatestWhoopRecovery();
+      const latestRecovery = await getLatestWhoopDashboard();
       setRecovery(latestRecovery);
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Unable to load WHOOP recovery.');
@@ -30,7 +30,7 @@ export function useWhoopRecovery() {
   }, []);
 
   const syncAndRefreshRecovery = useCallback(async () => {
-    await syncWhoopRecovery();
+    await syncWhoopData();
     await refreshRecovery();
   }, [refreshRecovery]);
 
