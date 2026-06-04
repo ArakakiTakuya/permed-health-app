@@ -4,44 +4,52 @@ import { Card, MetricCard, StatsCard } from '@/src/components/dashboard/cards';
 import { LineChart } from '@/src/components/dashboard/charts';
 import { Label } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
-import { trendData } from '@/src/data/dashboardData';
+import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
 import { colors } from '@/src/theme/colors';
 
 import { layoutStyles as styles } from '@/src/styles/layoutStyles';
 
-export function HeartPage() {
+export function HeartPage({ dashboard }: { dashboard: WhoopRecoveryMetrics }) {
   return (
     <View style={styles.panel}>
       <SectionHeader color={colors.rose} title="Heart" subtitle="WHOOP + Withings" />
       <View style={styles.grid2}>
-        <MetricCard label="Resting HR" value="52" unit="bpm" color={colors.rose} />
-        <MetricCard label="HRV (RMSSD)" value="68" unit="ms" color={colors.primary} />
-        <MetricCard label="Blood Oxygen" value="98" unit="%" color={colors.sky} />
-        <MetricCard label="Resp. Rate" value="14.2" unit="rpm" color={colors.violet} />
+        <MetricCard label="Resting HR" value={formatValue(dashboard.restingHeartRate)} unit="bpm" color={colors.rose} />
+        <MetricCard label="HRV (RMSSD)" value={formatValue(dashboard.hrvMs)} unit="ms" color={colors.primary} />
+        <MetricCard label="Blood Oxygen" value={formatValue(dashboard.spo2Percentage)} unit="%" color={colors.sky} />
+        <MetricCard label="Resp. Rate" value={formatValue(dashboard.respiratoryRate, 1)} unit="rpm" color={colors.violet} />
       </View>
       <Card accent={colors.rose}>
         <Label color={colors.rose}>24-Hour Heart Rate</Label>
-        <LineChart data={trendData.heart} color={colors.rose} min={45} max={95} tall />
+        <LineChart data={[]} color={colors.rose} min={45} max={95} tall />
       </Card>
       <StatsCard
         title="WHOOP Cardiac Metrics"
         rows={[
-          ['HRV (RMSSD)', '68 ms', colors.primary],
-          ['Resting HR', '52 bpm', colors.rose],
-          ['Max HR (24h)', '148 bpm', colors.amber],
-          ['Min HR (24h)', '48 bpm', colors.sky],
-          ['Avg HR', '67 bpm', colors.text],
+          ['HRV (RMSSD)', formatMetric(dashboard.hrvMs, 'ms'), colors.primary],
+          ['Resting HR', formatMetric(dashboard.restingHeartRate, 'bpm'), colors.rose],
+          ['Max HR (24h)', formatMetric(dashboard.maxHeartRate, 'bpm'), colors.amber],
+          ['Min HR (24h)', '--', colors.sky],
+          ['Avg HR', formatMetric(dashboard.averageHeartRate, 'bpm'), colors.text],
         ]}
       />
       <StatsCard
         title="Withings Cardiac"
         rows={[
-          ['Pulse Wave Velocity', '6.8 m/s', colors.primary],
-          ['Vascular Age', '29 yrs', colors.sage],
-          ['Standing HR', '72 bpm', colors.amber],
-          ['ECG Status', 'Sinus rhythm', colors.sage],
+          ['Pulse Wave Velocity', '--', colors.primary],
+          ['Vascular Age', '--', colors.sage],
+          ['Standing HR', '--', colors.amber],
+          ['ECG Status', '--', colors.sage],
         ]}
       />
     </View>
   );
+}
+
+function formatValue(value: number | undefined, fractionDigits = 0) {
+  return typeof value === 'number' ? value.toFixed(fractionDigits) : '--';
+}
+
+function formatMetric(value: number | undefined, unit: string, fractionDigits = 0) {
+  return typeof value === 'number' ? `${value.toFixed(fractionDigits)} ${unit}` : '--';
 }

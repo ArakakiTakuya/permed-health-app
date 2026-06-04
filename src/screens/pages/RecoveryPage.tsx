@@ -1,8 +1,8 @@
 import { Text, View } from 'react-native';
 
-import { StatsCard } from '@/src/components/dashboard/cards';
-import { Ring } from '@/src/components/dashboard/charts';
-import { HeroStat } from '@/src/components/dashboard/metricWidgets';
+import { Card, StatsCard } from '@/src/components/dashboard/cards';
+import { BarChart, Ring } from '@/src/components/dashboard/charts';
+import { HeroStat, Label } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
 import { WhoopConnectCard } from '@/src/components/WhoopConnectCard';
 import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
@@ -50,6 +50,10 @@ export function RecoveryPage({
           label="Sleep"
         />
       </View>
+      <Card accent={colors.rose}>
+        <Label color={colors.rose}>WEEKLY STRAIN</Label>
+        <BarChart data={[]} color={colors.rose} />
+      </Card>
       <WhoopConnectCard onConnected={onConnected} />
       <StatsCard
         title="WHOOP Metrics"

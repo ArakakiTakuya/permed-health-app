@@ -1,7 +1,8 @@
 import { Text, View } from 'react-native';
 
-import { StatsCard } from '@/src/components/dashboard/cards';
-import { SleepChip } from '@/src/components/dashboard/metricWidgets';
+import { Card, StatsCard } from '@/src/components/dashboard/cards';
+import { LineChart } from '@/src/components/dashboard/charts';
+import { Label, SleepChip } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
 import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
 import { colors } from '@/src/theme/colors';
@@ -48,6 +49,10 @@ export function SleepPage({ dashboard }: { dashboard: WhoopRecoveryMetrics }) {
           <SleepChip label="DEEP" value={formatMilliseconds(dashboard.totalSlowWaveSleepTimeMilli)} translucent />
         </View>
       </View>
+      <Card accent={colors.violet}>
+        <Label color={colors.violet}>OVERNIGHT HEART RATE</Label>
+        <LineChart data={[]} color={colors.violet} min={45} max={95} tall />
+      </Card>
       <StatsCard
         title="WITHINGS SLEEP MAT"
         rows={[

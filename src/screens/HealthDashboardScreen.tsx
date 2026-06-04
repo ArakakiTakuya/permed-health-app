@@ -48,7 +48,7 @@ export function HealthDashboardScreen() {
           {activeTab === 'recovery' && (
             <RecoveryPage dashboard={recovery} onConnected={syncAndRefreshRecovery} />
           )}
-          {activeTab === 'heart' && <HeartPage />}
+          {activeTab === 'heart' && <HeartPage dashboard={recovery} />}
         </ScrollView>
 
         <BottomNav activeTab={activeTab} onChange={handleTabChange} onReselect={scrollToTop} />
