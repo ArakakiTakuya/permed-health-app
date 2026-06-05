@@ -4,13 +4,23 @@ import { Card, StatsCard } from '@/src/components/dashboard/cards';
 import { LineChart } from '@/src/components/dashboard/charts';
 import { Label, SleepChip } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
+import { WithingsConnectCard } from '@/src/components/WithingsConnectCard';
 import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
+import type { WithingsDashboardMetrics } from '@/src/services/withingsApi';
 import { colors } from '@/src/theme/colors';
 
 import { heroStyles } from '@/src/styles/heroStyles';
 import { layoutStyles as styles } from '@/src/styles/layoutStyles';
 
-export function SleepPage({ dashboard }: { dashboard: WhoopRecoveryMetrics }) {
+export function SleepPage({
+  dashboard,
+  onWithingsConnected,
+  withingsDashboard,
+}: {
+  dashboard: WhoopRecoveryMetrics;
+  onWithingsConnected: () => Promise<void>;
+  withingsDashboard: WithingsDashboardMetrics;
+}) {
   const sleepRange = formatSleepRange(dashboard.sleepStartAt, dashboard.sleepEndAt);
   const totalSleepMilli = sumMilliseconds(
     dashboard.totalLightSleepTimeMilli,
@@ -53,16 +63,17 @@ export function SleepPage({ dashboard }: { dashboard: WhoopRecoveryMetrics }) {
         <Label color={colors.violet}>OVERNIGHT HEART RATE</Label>
         <LineChart data={[]} color={colors.violet} min={45} max={95} tall />
       </Card>
+      <WithingsConnectCard onConnected={onWithingsConnected} />
       <StatsCard
         title="WITHINGS SLEEP MAT"
         rows={[
-          ['Bedtime', '--', colors.text],
-          ['Wake Time', '--', colors.text],
-          ['Latency', '--', colors.sage],
-          ['Snoring', '--', colors.sage],
-          ['Interruptions', '--', colors.amber],
-          ['Apnea Index', '--', colors.sage],
-          ['Avg Night HR', '--', colors.violet],
+          ['Bedtime', formatTime(withingsDashboard.bedtimeAt), colors.text],
+          ['Wake Time', formatTime(withingsDashboard.wakeTimeAt), colors.text],
+          ['Latency', formatSeconds(withingsDashboard.latencySeconds), colors.sage],
+          ['Snoring', formatSeconds(withingsDashboard.snoringSeconds), colors.sage],
+          ['Interruptions', formatCount(withingsDashboard.interruptions), colors.amber],
+          ['Apnea Index', formatMetric(withingsDashboard.apneaIndex, '/hr', 1), colors.sage],
+          ['Avg Night HR', formatMetric(withingsDashboard.averageNightHeartRate, 'bpm'), colors.violet],
         ]}
       />
       <StatsCard
@@ -119,6 +130,22 @@ function formatMilliseconds(value: number | undefined) {
 
   const durationMinutes = Math.round(value / (60 * 1000));
   return `${Math.floor(durationMinutes / 60)}h ${durationMinutes % 60}m`;
+}
+
+function formatSeconds(value: number | undefined) {
+  if (typeof value !== 'number') {
+    return '--';
+  }
+
+  return `${Math.round(value / 60)} min`;
+}
+
+function formatMetric(value: number | undefined, unit: string, fractionDigits = 0) {
+  return typeof value === 'number' ? `${value.toFixed(fractionDigits)} ${unit}` : '--';
+}
+
+function formatCount(value: number | undefined) {
+  return typeof value === 'number' ? `${Math.round(value)}` : '--';
 }
 
 function sumMilliseconds(...values: (number | undefined)[]) {

@@ -6,6 +6,7 @@ import { type TabKey } from '@/src/components/navigation/dashboardTabs';
 
 import { BottomNav } from '@/src/components/BottomNav';
 import { TopBar } from '@/src/components/TopBar';
+import { useWithingsDashboard } from '@/src/hooks/useWithingsDashboard';
 import { useWhoopRecovery } from '@/src/hooks/useWhoopRecovery';
 import { BodyPage } from './pages/BodyPage';
 import { GlucosePage } from './pages/GlucosePage';
@@ -19,6 +20,10 @@ export function HealthDashboardScreen() {
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const scrollViewRef = useRef<ScrollView>(null);
   const { recovery, syncAndRefreshRecovery } = useWhoopRecovery();
+  const {
+    dashboard: withingsDashboard,
+    syncAndRefreshWithingsDashboard,
+  } = useWithingsDashboard();
 
   const scrollToTop = () => {
     scrollViewRef.current?.scrollTo({ y: 0, animated: true });
@@ -43,8 +48,18 @@ export function HealthDashboardScreen() {
         >
           {activeTab === 'overview' && <OverviewPage />}
           {activeTab === 'glucose' && <GlucosePage />}
-          {activeTab === 'body' && <BodyPage />}
-          {activeTab === 'sleep' && <SleepPage dashboard={recovery} />}
+          {activeTab === 'body' && (
+            <BodyPage
+              dashboard={withingsDashboard}
+            />
+          )}
+          {activeTab === 'sleep' && (
+            <SleepPage
+              dashboard={recovery}
+              onWithingsConnected={syncAndRefreshWithingsDashboard}
+              withingsDashboard={withingsDashboard}
+            />
+          )}
           {activeTab === 'recovery' && (
             <RecoveryPage dashboard={recovery} onConnected={syncAndRefreshRecovery} />
           )}

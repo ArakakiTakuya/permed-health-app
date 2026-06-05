@@ -1,51 +1,66 @@
 import { View } from 'react-native';
 
 import { Card, MetricCard, StatsCard } from '@/src/components/dashboard/cards';
-import { CompositionDonut, LineChart } from '@/src/components/dashboard/charts';
+import { LineChart } from '@/src/components/dashboard/charts';
 import { Label, Legend } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
-import { trendData } from '@/src/data/dashboardData';
+import type { WithingsDashboardMetrics } from '@/src/services/withingsApi';
 import { colors } from '@/src/theme/colors';
 
 import { layoutStyles as styles } from '@/src/styles/layoutStyles';
 
-export function BodyPage() {
+export function BodyPage({
+  dashboard,
+}: {
+  dashboard: WithingsDashboardMetrics;
+}) {
   return (
     <View style={styles.panel}>
       <SectionHeader color={colors.sky} title="Body Composition" subtitle="Withings Body Scan · Today" />
       <View style={styles.grid2}>
-        <MetricCard label="Weight" value="67.6" unit="kg" color={colors.sky} sub="-0.8 kg this week" />
-        <MetricCard label="BMI" value="22.4" color={colors.primary} sub="Normal range" />
-        <MetricCard label="Body Fat" value="18.2" unit="%" color={colors.rose} sub="Fitness range" />
-        <MetricCard label="Muscle Mass" value="52.4" unit="kg" color={colors.sage} />
+        <MetricCard label="Weight" value={formatValue(dashboard.weightKg, 1)} unit="kg" color={colors.sky} />
+        <MetricCard label="BMI" value={formatValue(dashboard.bmi, 1)} color={colors.primary} />
+        <MetricCard label="Body Fat" value={formatValue(dashboard.bodyFatPercentage, 1)} unit="%" color={colors.rose} />
+        <MetricCard label="Muscle Mass" value={formatValue(dashboard.muscleMassKg, 1)} unit="kg" color={colors.sage} />
       </View>
       <Card accent={colors.sky}>
         <Label color={colors.sky}>7-Day Weight Trend</Label>
-        <LineChart data={trendData.weight} color={colors.sky} min={67} max={69} tall />
+        <LineChart data={[]} color={colors.sky} min={67} max={69} tall />
       </Card>
       <Card accent={colors.primary}>
         <Label color={colors.primary}>Withings Body Composition</Label>
         <View style={styles.compositionRow}>
-          <CompositionDonut />
           <View style={styles.legendList}>
-            <Legend label="Muscle" value="52.4 kg" color={colors.primary} />
-            <Legend label="Fat" value="12.3 kg" color={colors.rose} />
-            <Legend label="Bone" value="3.1 kg" color={colors.amber} />
-            <Legend label="Water" value="39.8 kg" color={colors.sky} />
+            <Legend label="Muscle" value={formatMetric(dashboard.muscleMassKg, 'kg', 1)} color={colors.primary} />
+            <Legend label="Fat" value={formatMetric(dashboard.fatMassKg, 'kg', 1)} color={colors.rose} />
+            <Legend label="Bone" value={formatMetric(dashboard.boneMassKg, 'kg', 1)} color={colors.amber} />
+            <Legend label="Water" value={formatMetric(dashboard.hydrationKg, 'kg', 1)} color={colors.sky} />
           </View>
         </View>
       </Card>
       <StatsCard
         title="Withings Metrics"
         rows={[
-          ['Visceral Fat', 'Level 6', colors.sage],
-          ['Bone Mass', '3.1 kg', colors.amber],
-          ['Water %', '59.3%', colors.sky],
-          ['Protein %', '18.7%', colors.primary],
-          ['Metabolic Age', '28 yrs', colors.violet],
-          ['BMR', '1,524 kcal', colors.amber],
+          ['Visceral Fat', formatLevel(dashboard.visceralFatLevel), colors.sage],
+          ['Bone Mass', formatMetric(dashboard.boneMassKg, 'kg', 1), colors.amber],
+          ['Water %', formatMetric(dashboard.waterPercentage, '%', 1), colors.sky],
+          ['Protein %', formatMetric(dashboard.proteinPercentage, '%', 1), colors.primary],
+          ['Metabolic Age', formatMetric(dashboard.metabolicAge, 'yrs'), colors.violet],
+          ['BMR', formatMetric(dashboard.bmrKcal, 'kcal'), colors.amber],
         ]}
       />
     </View>
   );
+}
+
+function formatValue(value: number | undefined, fractionDigits = 0) {
+  return typeof value === 'number' ? value.toFixed(fractionDigits) : '--';
+}
+
+function formatMetric(value: number | undefined, unit: string, fractionDigits = 0) {
+  return typeof value === 'number' ? `${value.toFixed(fractionDigits)} ${unit}` : '--';
+}
+
+function formatLevel(value: number | undefined) {
+  return typeof value === 'number' ? `Level ${Math.round(value)}` : '--';
 }
