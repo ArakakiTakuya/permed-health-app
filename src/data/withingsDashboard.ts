@@ -1,4 +1,5 @@
 export type WithingsDashboardMetrics = {
+  connected?: boolean;
   weightKg?: number;
   bmi?: number;
   bodyFatPercentage?: number;
@@ -27,7 +28,11 @@ export type WithingsDashboardMetrics = {
 };
 
 export function normalizeWithingsDashboard(bodyPayload: unknown, sleepPayload: unknown) {
+  const bodyRecord = asRecord(bodyPayload);
+  const sleepRecord = asRecord(sleepPayload);
+
   return {
+    connected: getBoolean(bodyRecord.connected) || getBoolean(sleepRecord.connected),
     ...normalizeBody(bodyPayload),
     ...normalizeSleep(sleepPayload),
   };
@@ -204,4 +209,8 @@ function getNumber(value: unknown) {
 
 function getString(value: unknown) {
   return typeof value === 'string' && value ? value : undefined;
+}
+
+function getBoolean(value: unknown) {
+  return typeof value === 'boolean' ? value : undefined;
 }

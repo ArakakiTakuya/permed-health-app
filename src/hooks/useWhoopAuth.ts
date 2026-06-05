@@ -10,7 +10,7 @@ import { createWhoopConnectSession } from '@/src/services/whoopApi';
 
 WebBrowser.maybeCompleteAuthSession();
 
-type WhoopConnectionStatus = 'idle' | 'opening' | 'syncing' | 'connected' | 'error';
+export type WhoopConnectionStatus = 'idle' | 'opening' | 'syncing' | 'connected' | 'error';
 
 export function useWhoopAuth({
   onConnected,

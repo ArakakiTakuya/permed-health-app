@@ -77,10 +77,46 @@ export const heroStyles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: '#ffffff',
   },
+  liveDotConnected: {
+    backgroundColor: '#33c27f',
+    borderColor: '#ffffff',
+    borderWidth: 1,
+  },
   deviceTagText: {
     color: '#ffffff',
     fontSize: 10,
     fontWeight: '800',
+  },
+  deviceConnectButton: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.28)',
+  },
+  deviceConnectButtonDisabled: {
+    opacity: 0.6,
+  },
+  deviceConnectText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '900',
+    lineHeight: 14,
+  },
+  deviceConnectedBadge: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ffffff',
+  },
+  deviceConnectedText: {
+    color: '#168a55',
+    fontSize: 11,
+    fontWeight: '900',
+    lineHeight: 13,
   },
   heroFooter: {
     marginTop: 12,

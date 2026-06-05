@@ -7,6 +7,8 @@ import { type TabKey } from '@/src/components/navigation/dashboardTabs';
 import { BottomNav } from '@/src/components/BottomNav';
 import { TopBar } from '@/src/components/TopBar';
 import { useWithingsDashboard } from '@/src/hooks/useWithingsDashboard';
+import { useWithingsAuth } from '@/src/hooks/useWithingsAuth';
+import { useWhoopAuth } from '@/src/hooks/useWhoopAuth';
 import { useWhoopRecovery } from '@/src/hooks/useWhoopRecovery';
 import { BodyPage } from './pages/BodyPage';
 import { GlucosePage } from './pages/GlucosePage';
@@ -24,6 +26,12 @@ export function HealthDashboardScreen() {
     dashboard: withingsDashboard,
     syncAndRefreshWithingsDashboard,
   } = useWithingsDashboard();
+  const { connectWhoop, status: whoopConnectStatus } = useWhoopAuth({
+    onConnected: syncAndRefreshRecovery,
+  });
+  const { connectWithings, status: withingsConnectStatus } = useWithingsAuth({
+    onConnected: syncAndRefreshWithingsDashboard,
+  });
 
   const scrollToTop = () => {
     scrollViewRef.current?.scrollTo({ y: 0, animated: true });
@@ -47,7 +55,14 @@ export function HealthDashboardScreen() {
           showsVerticalScrollIndicator={false}
         >
           {activeTab === 'overview' && (
-            <OverviewPage dashboard={recovery} withingsDashboard={withingsDashboard} />
+            <OverviewPage
+              dashboard={recovery}
+              onConnectWhoop={connectWhoop}
+              onConnectWithings={connectWithings}
+              whoopConnectStatus={whoopConnectStatus}
+              withingsConnectStatus={withingsConnectStatus}
+              withingsDashboard={withingsDashboard}
+            />
           )}
           {activeTab === 'glucose' && <GlucosePage />}
           {activeTab === 'body' && (
@@ -58,13 +73,10 @@ export function HealthDashboardScreen() {
           {activeTab === 'sleep' && (
             <SleepPage
               dashboard={recovery}
-              onWithingsConnected={syncAndRefreshWithingsDashboard}
               withingsDashboard={withingsDashboard}
             />
           )}
-          {activeTab === 'recovery' && (
-            <RecoveryPage dashboard={recovery} onConnected={syncAndRefreshRecovery} />
-          )}
+          {activeTab === 'recovery' && <RecoveryPage dashboard={recovery} />}
           {activeTab === 'heart' && <HeartPage dashboard={recovery} />}
         </ScrollView>
 

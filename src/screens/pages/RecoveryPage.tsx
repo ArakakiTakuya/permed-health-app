@@ -4,7 +4,6 @@ import { Card, StatsCard } from '@/src/components/dashboard/cards';
 import { BarChart, Ring } from '@/src/components/dashboard/charts';
 import { HeroStat, Label } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
-import { WhoopConnectCard } from '@/src/components/WhoopConnectCard';
 import { formatMetric, formatScore, roundScore } from '@/src/data/healthFormatters';
 import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
 import { colors } from '@/src/theme/colors';
@@ -14,10 +13,8 @@ import { layoutStyles as styles } from '@/src/styles/layoutStyles';
 
 export function RecoveryPage({
   dashboard: recovery,
-  onConnected,
 }: {
   dashboard: WhoopRecoveryMetrics;
-  onConnected: () => Promise<void>;
 }) {
   return (
     <View style={styles.panel}>
@@ -55,7 +52,6 @@ export function RecoveryPage({
         <Label color={colors.rose}>WEEKLY STRAIN</Label>
         <BarChart data={[]} color={colors.rose} />
       </Card>
-      <WhoopConnectCard onConnected={onConnected} />
       <StatsCard
         title="WHOOP Metrics"
         rows={[

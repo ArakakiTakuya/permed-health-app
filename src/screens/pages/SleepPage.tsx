@@ -4,7 +4,6 @@ import { Card, StatsCard } from '@/src/components/dashboard/cards';
 import { LineChart } from '@/src/components/dashboard/charts';
 import { Label, SleepChip } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
-import { WithingsConnectCard } from '@/src/components/WithingsConnectCard';
 import {
   formatCount,
   formatMetric,
@@ -21,11 +20,9 @@ import { layoutStyles as styles } from '@/src/styles/layoutStyles';
 
 export function SleepPage({
   dashboard,
-  onWithingsConnected,
   withingsDashboard,
 }: {
   dashboard: WhoopRecoveryMetrics;
-  onWithingsConnected: () => Promise<void>;
   withingsDashboard: WithingsDashboardMetrics;
 }) {
   const sleepRange = formatSleepRange(dashboard.sleepStartAt, dashboard.sleepEndAt);
@@ -70,7 +67,6 @@ export function SleepPage({
         <Label color={colors.violet}>OVERNIGHT HEART RATE</Label>
         <LineChart data={[]} color={colors.violet} min={45} max={95} tall />
       </Card>
-      <WithingsConnectCard onConnected={onWithingsConnected} />
       <StatsCard
         title="WITHINGS SLEEP MAT"
         rows={[

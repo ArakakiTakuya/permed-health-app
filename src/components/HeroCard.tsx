@@ -1,8 +1,21 @@
-import { Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 import { heroStyles as styles } from '@/src/styles/heroStyles';
 
-export function HeroCard() {
+type ConnectionStatus = 'idle' | 'opening' | 'syncing' | 'connected' | 'error';
+
+type DeviceTag = {
+  connected?: boolean;
+  label: string;
+  onConnect?: () => void;
+  status?: ConnectionStatus;
+};
+
+export function HeroCard({
+  devices = [],
+}: {
+  devices?: DeviceTag[];
+}) {
   return (
     <View style={styles.hero}>
       <View style={styles.heroGlowTop} />
@@ -17,12 +30,36 @@ export function HeroCard() {
         </View>
       </View>
       <View style={styles.deviceTags}>
-        {['WHOOP', 'Withings', 'Lingo CGM'].map((device) => (
-          <View key={device} style={styles.deviceTag}>
-            <View style={styles.liveDot} />
-            <Text style={styles.deviceTagText}>{device}</Text>
-          </View>
-        ))}
+        {devices.map((device) => {
+          const connecting = device.status === 'opening' || device.status === 'syncing';
+          const showConnect = !device.connected && Boolean(device.onConnect);
+
+          return (
+            <View key={device.label} style={styles.deviceTag}>
+              <View style={[styles.liveDot, device.connected && styles.liveDotConnected]} />
+              <Text style={styles.deviceTagText}>{device.label}</Text>
+              {showConnect ? (
+                <Pressable
+                  accessibilityLabel={`Connect ${device.label}`}
+                  accessibilityRole="button"
+                  disabled={connecting}
+                  onPress={device.onConnect}
+                  style={[styles.deviceConnectButton, connecting && styles.deviceConnectButtonDisabled]}
+                >
+                  {connecting ? (
+                    <ActivityIndicator color="#ffffff" size="small" />
+                  ) : (
+                    <Text style={styles.deviceConnectText}>+</Text>
+                  )}
+                </Pressable>
+              ) : device.connected ? (
+                <View style={styles.deviceConnectedBadge}>
+                  <Text style={styles.deviceConnectedText}>✓</Text>
+                </View>
+              ) : null}
+            </View>
+          );
+        })}
       </View>
       <View style={styles.heroFooter}>
         <Text style={styles.heroSync}>Last synced: <Text style={styles.monoWhite}>--</Text></Text>

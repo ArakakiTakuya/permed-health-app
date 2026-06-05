@@ -19,6 +19,8 @@ import {
   roundScore,
 } from '@/src/data/healthFormatters';
 import type { WithingsDashboardMetrics } from '@/src/data/withingsDashboard';
+import type { WithingsConnectionStatus } from '@/src/hooks/useWithingsAuth';
+import type { WhoopConnectionStatus } from '@/src/hooks/useWhoopAuth';
 import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
 import { colors } from '@/src/theme/colors';
 
@@ -28,14 +30,42 @@ import { widgetStyles } from '@/src/styles/widgetStyles';
 
 export function OverviewPage({
   dashboard,
+  onConnectWhoop,
+  onConnectWithings,
+  whoopConnectStatus,
+  withingsConnectStatus,
   withingsDashboard,
 }: {
   dashboard: WhoopRecoveryMetrics;
+  onConnectWhoop: () => void;
+  onConnectWithings: () => void;
+  whoopConnectStatus: WhoopConnectionStatus;
+  withingsConnectStatus: WithingsConnectionStatus;
   withingsDashboard: WithingsDashboardMetrics;
 }) {
+  const whoopConnected = whoopConnectStatus === 'connected' || hasWhoopData(dashboard);
+  const withingsConnected =
+    withingsConnectStatus === 'connected' || hasWithingsData(withingsDashboard);
+
   return (
     <View style={styles.panel}>
-      <HeroCard />
+      <HeroCard
+        devices={[
+          {
+            connected: whoopConnected,
+            label: 'WHOOP',
+            onConnect: onConnectWhoop,
+            status: whoopConnectStatus,
+          },
+          {
+            connected: withingsConnected,
+            label: 'Withings',
+            onConnect: onConnectWithings,
+            status: withingsConnectStatus,
+          },
+          { connected: false, label: 'Lingo CGM' },
+        ]}
+      />
       <SectionHeader color={colors.primary} title="Daily Scores" subtitle="WHOOP, Withings, Lingo · Today" />
       <View style={styles.grid2}>
         <ScoreCard
@@ -108,4 +138,12 @@ export function OverviewPage({
       </Card>
     </View>
   );
+}
+
+function hasWhoopData(dashboard: WhoopRecoveryMetrics) {
+  return typeof dashboard.score === 'number' || typeof dashboard.hrvMs === 'number';
+}
+
+function hasWithingsData(dashboard: WithingsDashboardMetrics) {
+  return typeof dashboard.sleepScore === 'number' || typeof dashboard.weightKg === 'number';
 }

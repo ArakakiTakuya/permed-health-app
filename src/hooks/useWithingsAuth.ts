@@ -9,7 +9,7 @@ import {
 
 WebBrowser.maybeCompleteAuthSession();
 
-type WithingsConnectionStatus = 'idle' | 'opening' | 'syncing' | 'connected' | 'error';
+export type WithingsConnectionStatus = 'idle' | 'opening' | 'syncing' | 'connected' | 'error';
 
 export function useWithingsAuth({
   onConnected,
