@@ -26,20 +26,12 @@ export function HeartPage({ dashboard }: { dashboard: WhoopRecoveryMetrics }) {
       <StatsCard
         title="WHOOP Cardiac Metrics"
         rows={[
+          ['Average HR', formatMetric(dashboard.averageHeartRate, 'bpm'), colors.text],
           ['HRV (RMSSD)', formatMetric(dashboard.hrvMs, 'ms'), colors.primary],
           ['Resting HR', formatMetric(dashboard.restingHeartRate, 'bpm'), colors.rose],
+          ['Blood Oxygen', formatMetric(dashboard.spo2Percentage, '%'), colors.sky],
           ['Max HR (24h)', formatMetric(dashboard.maxHeartRate, 'bpm'), colors.amber],
           ['Min HR (24h)', '--', colors.sky],
-          ['Avg HR', formatMetric(dashboard.averageHeartRate, 'bpm'), colors.text],
-        ]}
-      />
-      <StatsCard
-        title="Withings Cardiac"
-        rows={[
-          ['Pulse Wave Velocity', '--', colors.primary],
-          ['Vascular Age', '--', colors.sage],
-          ['Standing HR', '--', colors.amber],
-          ['ECG Status', '--', colors.sage],
         ]}
       />
     </View>
