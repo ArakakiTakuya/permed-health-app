@@ -13,20 +13,27 @@ type DeviceTag = {
 
 export function HeroCard({
   devices = [],
+  memberEmail,
+  memberName,
 }: {
   devices?: DeviceTag[];
+  memberEmail?: string | null;
+  memberName?: string | null;
 }) {
+  const displayName = getDisplayName(memberName, memberEmail);
+  const displayInitial = displayName === '--' ? '-' : displayName.charAt(0).toUpperCase();
+
   return (
     <View style={styles.hero}>
       <View style={styles.heroGlowTop} />
       <View style={styles.heroGlowBottom} />
       <View style={styles.memberRow}>
         <View style={styles.memberAvatar}>
-          <Text style={styles.memberAvatarText}>-</Text>
+          <Text style={styles.memberAvatarText}>{displayInitial}</Text>
         </View>
         <View>
-          <Text style={styles.memberName}>--</Text>
-          <Text style={styles.memberSub}>--</Text>
+          <Text style={styles.memberName}>{displayName}</Text>
+          <Text style={styles.memberSub}>{memberEmail ?? '--'}</Text>
         </View>
       </View>
       <View style={styles.deviceTags}>
@@ -69,4 +76,16 @@ export function HeroCard({
       </View>
     </View>
   );
+}
+
+function getDisplayName(name?: string | null, email?: string | null) {
+  if (name) {
+    return name;
+  }
+
+  if (email) {
+    return email.split('@')[0] || email;
+  }
+
+  return '--';
 }

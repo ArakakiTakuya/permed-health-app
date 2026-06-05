@@ -30,6 +30,8 @@ import { widgetStyles } from '@/src/styles/widgetStyles';
 
 export function OverviewPage({
   dashboard,
+  memberEmail,
+  memberName,
   onConnectWhoop,
   onConnectWithings,
   whoopConnectStatus,
@@ -37,6 +39,8 @@ export function OverviewPage({
   withingsDashboard,
 }: {
   dashboard: WhoopRecoveryMetrics;
+  memberEmail?: string | null;
+  memberName?: string | null;
   onConnectWhoop: () => void;
   onConnectWithings: () => void;
   whoopConnectStatus: WhoopConnectionStatus;
@@ -65,6 +69,8 @@ export function OverviewPage({
           },
           { connected: false, label: 'Lingo CGM' },
         ]}
+        memberEmail={memberEmail}
+        memberName={memberName}
       />
       <SectionHeader color={colors.primary} title="Daily Scores" subtitle="WHOOP, Withings, Lingo · Today" />
       <View style={styles.grid2}>
