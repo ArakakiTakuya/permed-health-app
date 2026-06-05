@@ -26,7 +26,7 @@ export function ScoreCard({
 }: {
   label: string;
   title: string;
-  score: number;
+  score?: number;
   color: string;
   pill: string;
 }) {

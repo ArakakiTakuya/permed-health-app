@@ -103,24 +103,3 @@ export function BarChart({ data, color }: { data: number[]; color: string }) {
     </View>
   );
 }
-
-export function SleepDonut() {
-  return (
-    <View style={styles.donut}>
-      <View style={[styles.donutSlice, { backgroundColor: colors.violet, width: 66 }]} />
-      <View style={[styles.donutSlice, { backgroundColor: colors.sky, width: 52, top: 20 }]} />
-      <View style={[styles.donutSlice, { backgroundColor: colors.primary, width: 40, top: 42 }]} />
-      <Text style={styles.donutText}>78</Text>
-    </View>
-  );
-}
-
-export function CompositionDonut() {
-  return (
-    <View style={styles.compositionDonut}>
-      <View style={[styles.compositionBand, { backgroundColor: colors.primary, width: 118 }]} />
-      <View style={[styles.compositionBand, { backgroundColor: colors.rose, width: 90, top: 24 }]} />
-      <View style={[styles.compositionBand, { backgroundColor: colors.sky, width: 62, top: 48 }]} />
-    </View>
-  );
-}
