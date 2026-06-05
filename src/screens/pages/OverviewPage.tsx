@@ -19,6 +19,7 @@ import {
   roundScore,
 } from '@/src/data/healthFormatters';
 import type { WithingsDashboardMetrics } from '@/src/data/withingsDashboard';
+import type { AppleHealthConnectionStatus } from '@/src/hooks/useAppleHealthAuth';
 import type { WithingsConnectionStatus } from '@/src/hooks/useWithingsAuth';
 import type { WhoopConnectionStatus } from '@/src/hooks/useWhoopAuth';
 import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
@@ -32,8 +33,10 @@ export function OverviewPage({
   dashboard,
   memberEmail,
   memberName,
+  onConnectAppleHealth,
   onConnectWhoop,
   onConnectWithings,
+  appleHealthConnectStatus,
   whoopConnectStatus,
   withingsConnectStatus,
   withingsDashboard,
@@ -41,8 +44,10 @@ export function OverviewPage({
   dashboard: WhoopRecoveryMetrics;
   memberEmail?: string | null;
   memberName?: string | null;
+  onConnectAppleHealth: () => void;
   onConnectWhoop: () => void;
   onConnectWithings: () => void;
+  appleHealthConnectStatus: AppleHealthConnectionStatus;
   whoopConnectStatus: WhoopConnectionStatus;
   withingsConnectStatus: WithingsConnectionStatus;
   withingsDashboard: WithingsDashboardMetrics;
@@ -67,7 +72,12 @@ export function OverviewPage({
             onConnect: onConnectWithings,
             status: withingsConnectStatus,
           },
-          { connected: false, label: 'Lingo CGM' },
+          {
+            connected: appleHealthConnectStatus === 'connected',
+            label: 'Apple Health',
+            onConnect: onConnectAppleHealth,
+            status: appleHealthConnectStatus,
+          },
         ]}
         memberEmail={memberEmail}
         memberName={memberName}

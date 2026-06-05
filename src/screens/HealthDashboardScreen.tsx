@@ -6,6 +6,7 @@ import { type TabKey } from '@/src/components/navigation/dashboardTabs';
 
 import { BottomNav } from '@/src/components/BottomNav';
 import { TopBar } from '@/src/components/TopBar';
+import { useAppleHealthAuth } from '@/src/hooks/useAppleHealthAuth';
 import { useCurrentMobileUser } from '@/src/hooks/useCurrentMobileUser';
 import { useWithingsDashboard } from '@/src/hooks/useWithingsDashboard';
 import { useWithingsAuth } from '@/src/hooks/useWithingsAuth';
@@ -22,6 +23,10 @@ import { layoutStyles as styles } from '@/src/styles/layoutStyles';
 export function HealthDashboardScreen() {
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const scrollViewRef = useRef<ScrollView>(null);
+  const {
+    connectAppleHealth,
+    status: appleHealthConnectStatus,
+  } = useAppleHealthAuth();
   const { user } = useCurrentMobileUser();
   const { recovery, syncAndRefreshRecovery } = useWhoopRecovery();
   const {
@@ -58,9 +63,11 @@ export function HealthDashboardScreen() {
         >
           {activeTab === 'overview' && (
             <OverviewPage
+              appleHealthConnectStatus={appleHealthConnectStatus}
               dashboard={recovery}
               memberEmail={user?.email}
               memberName={user?.name}
+              onConnectAppleHealth={connectAppleHealth}
               onConnectWhoop={connectWhoop}
               onConnectWithings={connectWithings}
               whoopConnectStatus={whoopConnectStatus}
