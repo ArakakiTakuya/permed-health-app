@@ -5,6 +5,7 @@ import { BarChart, Ring } from '@/src/components/dashboard/charts';
 import { HeroStat, Label } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
 import { WhoopConnectCard } from '@/src/components/WhoopConnectCard';
+import { formatMetric, formatScore, roundScore } from '@/src/data/healthFormatters';
 import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
 import { colors } from '@/src/theme/colors';
 
@@ -40,12 +41,12 @@ export function RecoveryPage({
       </View>
       <View style={styles.ringRow}>
         <Ring
-          score={typeof recovery.score === 'number' ? Math.round(recovery.score) : undefined}
+          score={roundScore(recovery.score)}
           color={colors.primary}
           label="Recovery"
         />
         <Ring
-          score={typeof recovery.sleepScore === 'number' ? Math.round(recovery.sleepScore) : undefined}
+          score={roundScore(recovery.sleepScore)}
           color={colors.violet}
           label="Sleep"
         />
@@ -67,16 +68,4 @@ export function RecoveryPage({
       />
     </View>
   );
-}
-
-function formatScore(score: number | undefined) {
-  return typeof score === 'number' ? Math.round(score) : '--';
-}
-
-function formatMetric(value: number | undefined, unit: string, fractionDigits = 0) {
-  if (typeof value !== 'number') {
-    return '--';
-  }
-
-  return [value.toFixed(fractionDigits), unit].filter(Boolean).join(' ');
 }

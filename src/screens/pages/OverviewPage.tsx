@@ -10,20 +10,48 @@ import {
   SleepChip,
 } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
+import {
+  formatCount,
+  formatMetric,
+  formatScore,
+  formatSecondsAsDuration,
+  getScoreLabel,
+  roundScore,
+} from '@/src/data/healthFormatters';
+import type { WithingsDashboardMetrics } from '@/src/data/withingsDashboard';
+import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
 import { colors } from '@/src/theme/colors';
 
 import { HeroCard } from '@/src/components/HeroCard';
 import { layoutStyles as styles } from '@/src/styles/layoutStyles';
 import { widgetStyles } from '@/src/styles/widgetStyles';
 
-export function OverviewPage() {
+export function OverviewPage({
+  dashboard,
+  withingsDashboard,
+}: {
+  dashboard: WhoopRecoveryMetrics;
+  withingsDashboard: WithingsDashboardMetrics;
+}) {
   return (
     <View style={styles.panel}>
       <HeroCard />
       <SectionHeader color={colors.primary} title="Daily Scores" subtitle="WHOOP, Withings, Lingo · Today" />
       <View style={styles.grid2}>
-        <ScoreCard label="WHOOP" title="Recovery" color={colors.primary} pill="--" />
-        <ScoreCard label="Withings" title="Sleep Score" color={colors.violet} pill="--" />
+        <ScoreCard
+          label="WHOOP"
+          title="Recovery"
+          score={roundScore(dashboard.score)}
+          color={colors.primary}
+          pill={dashboard.status}
+        />
+        <ScoreCard
+          label="Withings"
+          title="Sleep Score"
+          score={roundScore(withingsDashboard.sleepScore)}
+          color={colors.violet}
+          pill={getScoreLabel(withingsDashboard.sleepScore)}
+        />
         <ScoreCard label="Lingo" title="Time in Range" color={colors.amber} pill="--" />
         <ScoreCard label="Withings" title="Body Score" color={colors.sky} pill="--" />
       </View>
@@ -48,30 +76,34 @@ export function OverviewPage() {
         <View style={styles.splitHeader}>
           <View>
             <Label color={colors.violet}>Withings · Last Night</Label>
-            <Text style={[widgetStyles.largeNumber, { color: colors.violet }]}>--</Text>
-            <Text style={widgetStyles.bodyMuted}>Sleep Score: <Text style={widgetStyles.boldViolet}>--</Text></Text>
+            <Text style={[widgetStyles.largeNumber, { color: colors.violet }]}>
+              {formatSecondsAsDuration(withingsDashboard.totalSleepSeconds)}
+            </Text>
+            <Text style={widgetStyles.bodyMuted}>
+              Sleep Score: <Text style={widgetStyles.boldViolet}>{formatScore(withingsDashboard.sleepScore)}</Text>
+            </Text>
           </View>
-          <Ring color={colors.violet} />
+          <Ring score={roundScore(withingsDashboard.sleepScore)} color={colors.violet} />
         </View>
         <View style={styles.grid4}>
-          <SleepChip label="AWAKE" value="--" color={colors.rose} />
-          <SleepChip label="REM" value="--" color={colors.violet} />
-          <SleepChip label="LIGHT" value="--" color={colors.sky} />
-          <SleepChip label="DEEP" value="--" color={colors.primary} />
+          <SleepChip label="AWAKE" value={formatCount(withingsDashboard.interruptions)} color={colors.rose} />
+          <SleepChip label="REM" value={formatSecondsAsDuration(withingsDashboard.remSleepSeconds)} color={colors.violet} />
+          <SleepChip label="LIGHT" value={formatSecondsAsDuration(withingsDashboard.lightSleepSeconds)} color={colors.sky} />
+          <SleepChip label="DEEP" value={formatSecondsAsDuration(withingsDashboard.deepSleepSeconds)} color={colors.primary} />
         </View>
       </Card>
 
       <Card accent={colors.rose}>
         <Label color={colors.rose}>WHOOP · Recovery</Label>
         <View style={styles.ringRow}>
-          <Ring color={colors.primary} label="Recovery" />
-          <Ring color={colors.violet} label="Sleep" />
+          <Ring score={roundScore(dashboard.score)} color={colors.primary} label="Recovery" />
+          <Ring score={roundScore(dashboard.sleepScore)} color={colors.violet} label="Sleep" />
           <Ring color={colors.rose} label="Strain" />
         </View>
         <View style={styles.grid3}>
-          <InfoBox label="HRV" value="--" />
-          <InfoBox label="Resting HR" value="--" />
-          <InfoBox label="Calories" value="--" />
+          <InfoBox label="HRV" value={formatMetric(dashboard.hrvMs, 'ms')} />
+          <InfoBox label="Resting HR" value={formatMetric(dashboard.restingHeartRate, 'bpm')} />
+          <InfoBox label="Calories" value={formatMetric(dashboard.caloriesBurned, 'kcal')} />
         </View>
       </Card>
     </View>

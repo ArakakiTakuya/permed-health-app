@@ -4,6 +4,7 @@ import { Card, MetricCard, StatsCard } from '@/src/components/dashboard/cards';
 import { LineChart } from '@/src/components/dashboard/charts';
 import { Label } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
+import { formatMetric, formatMetricValue } from '@/src/data/healthFormatters';
 import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
 import { colors } from '@/src/theme/colors';
 
@@ -14,10 +15,10 @@ export function HeartPage({ dashboard }: { dashboard: WhoopRecoveryMetrics }) {
     <View style={styles.panel}>
       <SectionHeader color={colors.rose} title="Heart" subtitle="WHOOP + Withings" />
       <View style={styles.grid2}>
-        <MetricCard label="Resting HR" value={formatValue(dashboard.restingHeartRate)} unit="bpm" color={colors.rose} />
-        <MetricCard label="HRV (RMSSD)" value={formatValue(dashboard.hrvMs)} unit="ms" color={colors.primary} />
-        <MetricCard label="Blood Oxygen" value={formatValue(dashboard.spo2Percentage)} unit="%" color={colors.sky} />
-        <MetricCard label="Resp. Rate" value={formatValue(dashboard.respiratoryRate, 1)} unit="rpm" color={colors.violet} />
+        <MetricCard label="Resting HR" value={formatMetricValue(dashboard.restingHeartRate)} unit="bpm" color={colors.rose} />
+        <MetricCard label="HRV (RMSSD)" value={formatMetricValue(dashboard.hrvMs)} unit="ms" color={colors.primary} />
+        <MetricCard label="Blood Oxygen" value={formatMetricValue(dashboard.spo2Percentage)} unit="%" color={colors.sky} />
+        <MetricCard label="Resp. Rate" value={formatMetricValue(dashboard.respiratoryRate, 1)} unit="rpm" color={colors.violet} />
       </View>
       <Card accent={colors.rose}>
         <Label color={colors.rose}>24-Hour Heart Rate</Label>
@@ -36,12 +37,4 @@ export function HeartPage({ dashboard }: { dashboard: WhoopRecoveryMetrics }) {
       />
     </View>
   );
-}
-
-function formatValue(value: number | undefined, fractionDigits = 0) {
-  return typeof value === 'number' ? value.toFixed(fractionDigits) : '--';
-}
-
-function formatMetric(value: number | undefined, unit: string, fractionDigits = 0) {
-  return typeof value === 'number' ? `${value.toFixed(fractionDigits)} ${unit}` : '--';
 }

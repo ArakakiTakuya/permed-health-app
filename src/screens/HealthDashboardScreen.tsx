@@ -46,7 +46,9 @@ export function HealthDashboardScreen() {
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
         >
-          {activeTab === 'overview' && <OverviewPage />}
+          {activeTab === 'overview' && (
+            <OverviewPage dashboard={recovery} withingsDashboard={withingsDashboard} />
+          )}
           {activeTab === 'glucose' && <GlucosePage />}
           {activeTab === 'body' && (
             <BodyPage

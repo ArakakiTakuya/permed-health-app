@@ -5,6 +5,13 @@ import { LineChart } from '@/src/components/dashboard/charts';
 import { Label, SleepChip } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
 import { WithingsConnectCard } from '@/src/components/WithingsConnectCard';
+import {
+  formatCount,
+  formatMetric,
+  formatMillisecondsAsDuration,
+  formatScore,
+  formatSeconds,
+} from '@/src/data/healthFormatters';
 import type { WithingsDashboardMetrics } from '@/src/data/withingsDashboard';
 import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
 import { colors } from '@/src/theme/colors';
@@ -36,7 +43,7 @@ export function SleepPage({
           <View>
             <Text style={heroStyles.heroLabel}>TOTAL SLEEP</Text>
             <Text style={heroStyles.heroNumber}>
-              {formatMilliseconds(totalSleepMilli)}
+              {formatMillisecondsAsDuration(totalSleepMilli)}
             </Text>
             <Text style={heroStyles.heroText}>
               Sleep Score:{' '}
@@ -53,10 +60,10 @@ export function SleepPage({
           </View>
         </View>
         <View style={styles.grid4}>
-          <SleepChip label="AWAKE" value={formatMilliseconds(dashboard.totalAwakeTimeMilli)} translucent />
-          <SleepChip label="REM" value={formatMilliseconds(dashboard.totalRemSleepTimeMilli)} translucent />
-          <SleepChip label="LIGHT" value={formatMilliseconds(dashboard.totalLightSleepTimeMilli)} translucent />
-          <SleepChip label="DEEP" value={formatMilliseconds(dashboard.totalSlowWaveSleepTimeMilli)} translucent />
+          <SleepChip label="AWAKE" value={formatMillisecondsAsDuration(dashboard.totalAwakeTimeMilli)} translucent />
+          <SleepChip label="REM" value={formatMillisecondsAsDuration(dashboard.totalRemSleepTimeMilli)} translucent />
+          <SleepChip label="LIGHT" value={formatMillisecondsAsDuration(dashboard.totalLightSleepTimeMilli)} translucent />
+          <SleepChip label="DEEP" value={formatMillisecondsAsDuration(dashboard.totalSlowWaveSleepTimeMilli)} translucent />
         </View>
       </View>
       <Card accent={colors.violet}>
@@ -80,18 +87,14 @@ export function SleepPage({
         title="WHOOP SLEEP PERFORMANCE"
         rows={[
           ['Sleep Performance', formatPercentage(dashboard.sleepScore), colors.violet],
-          ['Sleep Need', formatMilliseconds(dashboard.sleepNeedMilli), colors.text],
-          ['Sleep Debt', formatMilliseconds(dashboard.sleepDebtMilli), colors.rose],
-          ['Deep (SWS)', formatMilliseconds(dashboard.totalSlowWaveSleepTimeMilli), colors.primary],
+          ['Sleep Need', formatMillisecondsAsDuration(dashboard.sleepNeedMilli), colors.text],
+          ['Sleep Debt', formatMillisecondsAsDuration(dashboard.sleepDebtMilli), colors.rose],
+          ['Deep (SWS)', formatMillisecondsAsDuration(dashboard.totalSlowWaveSleepTimeMilli), colors.primary],
           ['Recovery Score', formatPercentage(dashboard.score), colors.primary],
         ]}
       />
     </View>
   );
-}
-
-function formatScore(score: number | undefined) {
-  return typeof score === 'number' ? `${Math.round(score)} / 100` : '--';
 }
 
 function formatPercentage(value: number | undefined) {
@@ -121,31 +124,6 @@ function formatTime(value: string | undefined) {
     hour: 'numeric',
     minute: '2-digit',
   });
-}
-
-function formatMilliseconds(value: number | undefined) {
-  if (typeof value !== 'number') {
-    return '--';
-  }
-
-  const durationMinutes = Math.round(value / (60 * 1000));
-  return `${Math.floor(durationMinutes / 60)}h ${durationMinutes % 60}m`;
-}
-
-function formatSeconds(value: number | undefined) {
-  if (typeof value !== 'number') {
-    return '--';
-  }
-
-  return `${Math.round(value / 60)} min`;
-}
-
-function formatMetric(value: number | undefined, unit: string, fractionDigits = 0) {
-  return typeof value === 'number' ? `${value.toFixed(fractionDigits)} ${unit}` : '--';
-}
-
-function formatCount(value: number | undefined) {
-  return typeof value === 'number' ? `${Math.round(value)}` : '--';
 }
 
 function sumMilliseconds(...values: (number | undefined)[]) {
