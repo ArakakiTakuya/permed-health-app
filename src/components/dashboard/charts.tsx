@@ -90,16 +90,80 @@ export function LineChart({
   );
 }
 
-export function BarChart({ data, color }: { data: number[]; color: string }) {
-  const max = Math.max(...data);
+type BarChartDatum = {
+  label: string;
+  value?: number | null;
+};
+
+export function BarChart({
+  color,
+  data,
+  maxValue,
+  ticks = [],
+}: {
+  color: string;
+  data: (number | BarChartDatum)[];
+  maxValue?: number;
+  ticks?: number[];
+}) {
+  const values = data.map(getBarValue).filter((value): value is number => typeof value === 'number');
+  const max = maxValue ?? Math.max(...values, 20);
+
   return (
     <View style={styles.barChart}>
-      {data.map((value, index) => (
-        <View key={`${value}-${index}`} style={styles.barColumn}>
-          <View style={[styles.bar, { height: Math.max(20, (value / max) * 112), backgroundColor: `${color}24`, borderColor: color }]} />
-          <Text style={styles.barLabel}>{['M', 'T', 'W', 'T', 'F', 'S', 'S'][index]}</Text>
+      {ticks.length ? (
+        <View pointerEvents="none" style={styles.barAxis}>
+          {ticks.map((tick) => (
+            <View
+              key={tick}
+              style={[
+                styles.barAxisTick,
+                { bottom: getBarHeight(tick, max) + 16 },
+              ]}
+            >
+              <Text style={styles.barAxisLabel}>{tick}</Text>
+              <View style={styles.barAxisLine} />
+            </View>
+          ))}
         </View>
-      ))}
+      ) : null}
+      <View style={styles.barPlot}>
+        {data.map((item, index) => {
+          const value = getBarValue(item);
+          const label = getBarLabel(item, index);
+          const hasValue = typeof value === 'number';
+          const height = hasValue ? Math.max(20, getBarHeight(value, max)) : 20;
+
+          return (
+            <View key={`${label}-${index}`} style={styles.barColumn}>
+              <View
+                style={[
+                  styles.bar,
+                  !hasValue && styles.barEmpty,
+                  {
+                    height,
+                    backgroundColor: hasValue ? `${color}24` : 'transparent',
+                    borderColor: hasValue ? color : `${color}44`,
+                  },
+                ]}
+              />
+              <Text style={styles.barLabel}>{label}</Text>
+            </View>
+          );
+        })}
+      </View>
     </View>
   );
+}
+
+function getBarHeight(value: number, max: number) {
+  return Math.max(0, Math.min(112, (value / max) * 112));
+}
+
+function getBarValue(item: number | BarChartDatum) {
+  return typeof item === 'number' ? item : item.value ?? undefined;
+}
+
+function getBarLabel(item: number | BarChartDatum, index: number) {
+  return typeof item === 'number' ? ['M', 'T', 'W', 'T', 'F', 'S', 'S'][index] : item.label;
 }

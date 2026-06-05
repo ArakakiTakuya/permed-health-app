@@ -8,6 +8,7 @@ import {
 
 const EMPTY_RECOVERY: WhoopRecoveryMetrics = {
   status: '--',
+  weeklyStrain: [],
 };
 
 export function useWhoopRecovery() {

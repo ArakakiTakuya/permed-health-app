@@ -9,11 +9,18 @@ type LatestWhoopRecoveryResponse = {
   cycle?: unknown;
   recovery?: unknown;
   sleep?: unknown;
+  weeklyStrain?: unknown;
   data?: unknown;
   score?: unknown;
   hrvMs?: unknown;
   restingHeartRate?: unknown;
   respiratoryRate?: unknown;
+};
+
+export type WeeklyStrainPoint = {
+  date: string;
+  label: string;
+  strain?: number | null;
 };
 
 export type WhoopRecoveryMetrics = {
@@ -43,6 +50,7 @@ export type WhoopRecoveryMetrics = {
   averageHeartRate?: number;
   maxHeartRate?: number;
   status: string;
+  weeklyStrain: WeeklyStrainPoint[];
 };
 
 export async function createWhoopConnectSession() {
@@ -153,7 +161,32 @@ function normalizeRecovery(payload: unknown): WhoopRecoveryMetrics {
       getNumber(cycleRecord.average_heart_rate),
     maxHeartRate: getNumber(cycleRecord.maxHeartRate) ?? getNumber(cycleRecord.max_heart_rate),
     status: getRecoveryStatus(recoveryRecord, scoreRecord, recoveryScore),
+    weeklyStrain: normalizeWeeklyStrain(payloadRecord.weeklyStrain),
   };
+}
+
+function normalizeWeeklyStrain(value: unknown): WeeklyStrainPoint[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.reduce<WeeklyStrainPoint[]>((points, item) => {
+    const record = asRecord(item);
+    const label = getString(record.label);
+    const date = getString(record.date);
+
+    if (!label || !date) {
+      return points;
+    }
+
+    points.push({
+      date,
+      label,
+      strain: getNumber(record.strain) ?? null,
+    });
+
+    return points;
+  }, []);
 }
 
 function getRecoveryRecord(record: Record<string, unknown>) {

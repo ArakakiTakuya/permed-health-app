@@ -96,9 +96,41 @@ export const chartStyles = StyleSheet.create({
   },
   barChart: {
     height: 148,
+    marginTop: 28,
+    position: 'relative',
+  },
+  barPlot: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
+    paddingLeft: 28,
+  },
+  barAxis: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 24,
+    left: 0,
+  },
+  barAxisTick: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  barAxisLabel: {
+    width: 22,
+    color: colors.faint,
+    fontSize: 9,
+    fontWeight: '800',
+  },
+  barAxisLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.border,
+    opacity: 0.8,
   },
   barColumn: {
     flex: 1,
@@ -108,6 +140,10 @@ export const chartStyles = StyleSheet.create({
     width: 24,
     borderRadius: 6,
     borderWidth: 1,
+  },
+  barEmpty: {
+    borderStyle: 'dashed',
+    opacity: 0.55,
   },
   barLabel: {
     marginTop: 6,

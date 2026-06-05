@@ -50,7 +50,15 @@ export function RecoveryPage({
       </View>
       <Card accent={colors.rose}>
         <Label color={colors.rose}>WEEKLY STRAIN</Label>
-        <BarChart data={[]} color={colors.rose} />
+        <BarChart
+          color={colors.rose}
+          data={recovery.weeklyStrain.map((item) => ({
+            label: item.label,
+            value: item.strain,
+          }))}
+          maxValue={20}
+          ticks={[0, 10, 20]}
+        />
       </Card>
       <StatsCard
         title="WHOOP Metrics"
