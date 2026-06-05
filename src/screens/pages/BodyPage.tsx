@@ -4,7 +4,7 @@ import { Card, MetricCard, StatsCard } from '@/src/components/dashboard/cards';
 import { LineChart } from '@/src/components/dashboard/charts';
 import { Label, Legend } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
-import type { WithingsDashboardMetrics } from '@/src/services/withingsApi';
+import type { WithingsDashboardMetrics } from '@/src/data/withingsDashboard';
 import { colors } from '@/src/theme/colors';
 
 import { layoutStyles as styles } from '@/src/styles/layoutStyles';

@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import type { WithingsDashboardMetrics } from '@/src/data/withingsDashboard';
 import {
   getLatestWithingsDashboard,
   syncWithingsData,
-  type WithingsDashboardMetrics,
 } from '@/src/services/withingsApi';
 
 const EMPTY_WITHINGS_DASHBOARD: WithingsDashboardMetrics = {};

@@ -5,8 +5,8 @@ import { LineChart } from '@/src/components/dashboard/charts';
 import { Label, SleepChip } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
 import { WithingsConnectCard } from '@/src/components/WithingsConnectCard';
+import type { WithingsDashboardMetrics } from '@/src/data/withingsDashboard';
 import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
-import type { WithingsDashboardMetrics } from '@/src/services/withingsApi';
 import { colors } from '@/src/theme/colors';
 
 import { heroStyles } from '@/src/styles/heroStyles';
