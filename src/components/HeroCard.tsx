@@ -22,6 +22,8 @@ export function HeroCard({
 }) {
   const displayName = getDisplayName(memberName, memberEmail);
   const displayInitial = displayName === '--' ? '-' : displayName.charAt(0).toUpperCase();
+  const activeDeviceCount = devices.filter((device) => device.connected).length;
+  const activeDeviceText = `${activeDeviceCount}/${devices.length} Active`;
 
   return (
     <View style={styles.hero}>
@@ -71,7 +73,7 @@ export function HeroCard({
       <View style={styles.heroFooter}>
         <Text style={styles.heroSync}>Last synced: <Text style={styles.monoWhite}>--</Text></Text>
         <View style={styles.whitePill}>
-          <Text style={styles.whitePillText}>-- Active</Text>
+          <Text style={styles.whitePillText}>{activeDeviceText}</Text>
         </View>
       </View>
     </View>
