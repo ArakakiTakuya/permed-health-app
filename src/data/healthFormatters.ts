@@ -90,6 +90,24 @@ export function formatLastSyncedAt(value: Date | null | undefined) {
   })}`;
 }
 
+export function formatDataWeekday(value: string | undefined) {
+  if (!value) {
+    return 'Data: --';
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return 'Data: --';
+  }
+
+  return `Data: ${date.toLocaleDateString([], {
+    month: 'short',
+    day: 'numeric',
+    weekday: 'short',
+  })}`;
+}
+
 export function getScoreLabel(value: number | undefined) {
   if (typeof value !== 'number') {
     return '--';

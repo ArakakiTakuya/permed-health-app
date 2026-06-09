@@ -18,6 +18,13 @@ export const cardStyles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '800',
   },
+  cardMeta: {
+    marginTop: -4,
+    marginBottom: 8,
+    color: colors.faint,
+    fontSize: 10,
+    fontWeight: '700',
+  },
   metricSub: {
     marginTop: 4,
     color: colors.faint,

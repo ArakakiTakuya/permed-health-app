@@ -1,10 +1,10 @@
 import { View } from 'react-native';
 
-import { Card, MetricCard, StatsCard } from '@/src/components/dashboard/cards';
+import { Card, CardMeta, MetricCard, StatsCard } from '@/src/components/dashboard/cards';
 import { LineChart } from '@/src/components/dashboard/charts';
 import { Label } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
-import { formatLastSyncedAt, formatMetric, formatMetricValue } from '@/src/data/healthFormatters';
+import { formatDataWeekday, formatLastSyncedAt, formatMetric, formatMetricValue } from '@/src/data/healthFormatters';
 import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
 import { colors } from '@/src/theme/colors';
 
@@ -17,6 +17,8 @@ export function HeartPage({
   dashboard: WhoopRecoveryMetrics;
   lastSyncedAt: Date | null;
 }) {
+  const dataLabel = formatDataWeekday(dashboard.cycleStartAt ?? dashboard.recoveryDate);
+
   return (
     <View style={styles.panel}>
       <SectionHeader
@@ -32,9 +34,11 @@ export function HeartPage({
       </View>
       <Card accent={colors.rose}>
         <Label color={colors.rose}>24-Hour Heart Rate</Label>
+        <CardMeta text={dataLabel} />
         <LineChart data={[]} color={colors.rose} min={45} max={95} tall />
       </Card>
       <StatsCard
+        meta={dataLabel}
         title="WHOOP Cardiac Metrics"
         rows={[
           ['Average HR', formatMetric(dashboard.averageHeartRate, 'bpm'), colors.text],

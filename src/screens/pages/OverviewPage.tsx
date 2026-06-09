@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-import { Card, ScoreCard } from '@/src/components/dashboard/cards';
+import { Card, CardMeta, ScoreCard } from '@/src/components/dashboard/cards';
 import { LineChart, Ring } from '@/src/components/dashboard/charts';
 import {
   InfoBox,
@@ -13,6 +13,7 @@ import { SectionHeader } from '@/src/components/dashboard/sections';
 import { hasWhoopData, hasWithingsData } from '@/src/data/healthChartData';
 import {
   formatCount,
+  formatDataWeekday,
   formatMetric,
   formatScore,
   formatSecondsAsDuration,
@@ -56,6 +57,8 @@ export function OverviewPage({
   const whoopConnected = whoopConnectStatus === 'connected' || hasWhoopData(dashboard);
   const withingsConnected =
     withingsConnectStatus === 'connected' || hasWithingsData(withingsDashboard);
+  const whoopDataLabel = formatDataWeekday(dashboard.recoveryDate ?? dashboard.cycleStartAt);
+  const withingsDataLabel = formatDataWeekday(withingsDashboard.sleepDate ?? withingsDashboard.bedtimeAt);
 
   return (
     <View style={styles.panel}>
@@ -83,10 +86,15 @@ export function OverviewPage({
         memberEmail={memberEmail}
         memberName={memberName}
       />
-      <SectionHeader color={colors.primary} title="Daily Scores" subtitle="WHOOP, Withings, Lingo" />
+      <SectionHeader
+        color={colors.primary}
+        title="Daily Scores"
+        subtitle="WHOOP, Withings, Lingo"
+      />
       <View style={styles.grid2}>
         <ScoreCard
           label="WHOOP"
+          meta={whoopDataLabel}
           title="Recovery"
           score={roundScore(dashboard.score)}
           color={colors.primary}
@@ -94,19 +102,21 @@ export function OverviewPage({
         />
         <ScoreCard
           label="Withings"
+          meta={withingsDataLabel}
           title="Sleep Score"
           score={roundScore(withingsDashboard.sleepScore)}
           color={colors.violet}
           pill={getScoreLabel(withingsDashboard.sleepScore)}
         />
-        <ScoreCard label="Lingo" title="Time in Range" color={colors.amber} pill="--" />
-        <ScoreCard label="Withings" title="Body Score" color={colors.sky} pill="--" />
+        <ScoreCard label="Lingo" meta={formatDataWeekday(undefined)} title="Time in Range" color={colors.amber} pill="--" />
+        <ScoreCard label="Withings" meta={formatDataWeekday(withingsDashboard.bodyMeasuredAt)} title="Body Score" color={colors.sky} pill="--" />
       </View>
 
       <Card accent={colors.amber}>
         <View style={styles.splitHeader}>
           <View>
             <Label color={colors.amber}>Lingo CGM · Now</Label>
+            <CardMeta text={formatDataWeekday(undefined)} />
             <MetricValue color={colors.amber} value="--" unit="mg/dL" />
             <Pill color={colors.sage} bg={colors.sageLight} text="--" />
           </View>
@@ -122,6 +132,7 @@ export function OverviewPage({
         <View style={styles.splitHeader}>
           <View>
             <Label color={colors.violet}>Withings</Label>
+            <CardMeta text={withingsDataLabel} />
             <Text style={[widgetStyles.largeNumber, { color: colors.violet }]}>
               {formatSecondsAsDuration(withingsDashboard.totalSleepSeconds)}
             </Text>
@@ -141,6 +152,7 @@ export function OverviewPage({
 
       <Card accent={colors.rose}>
         <Label color={colors.rose}>WHOOP · Recovery</Label>
+        <CardMeta text={whoopDataLabel} />
         <View style={styles.ringRow}>
           <Ring score={roundScore(dashboard.score)} color={colors.primary} label="Recovery" />
           <Ring score={roundScore(dashboard.sleepScore)} color={colors.violet} label="Sleep" />

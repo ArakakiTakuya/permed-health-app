@@ -1,11 +1,12 @@
 import { Text, View } from 'react-native';
 
-import { Card, StatsCard } from '@/src/components/dashboard/cards';
+import { Card, CardMeta, StatsCard } from '@/src/components/dashboard/cards';
 import { LineChart } from '@/src/components/dashboard/charts';
 import { Label, SleepChip } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
 import {
   formatCount,
+  formatDataWeekday,
   formatLastSyncedAt,
   formatMetric,
   formatMillisecondsAsDuration,
@@ -40,6 +41,8 @@ export function SleepPage({
     dashboard.totalSlowWaveSleepTimeMilli,
     dashboard.totalRemSleepTimeMilli,
   );
+  const withingsDataLabel = formatDataWeekday(withingsDashboard.sleepDate ?? withingsDashboard.bedtimeAt);
+  const whoopDataLabel = formatDataWeekday(dashboard.sleepStartAt);
   const withingsSyncLabel = formatLastSyncedAt(withingsLastSyncedAt);
   const whoopSyncLabel = formatLastSyncedAt(whoopLastSyncedAt).replace('Last synced: ', '');
 
@@ -51,6 +54,7 @@ export function SleepPage({
         subtitle={`Withings · ${withingsSyncLabel} · WHOOP ${whoopSyncLabel}`}
       />
       <View style={heroStyles.violetHero}>
+        <Text style={heroStyles.microWhite}>{whoopDataLabel}</Text>
         <View style={styles.splitHeader}>
           <View>
             <Text style={heroStyles.heroLabel}>TOTAL SLEEP</Text>
@@ -80,10 +84,12 @@ export function SleepPage({
       </View>
       <Card accent={colors.violet}>
         <Label color={colors.violet}>OVERNIGHT HEART RATE</Label>
+        <CardMeta text={withingsDataLabel} />
         <LineChart data={[]} color={colors.violet} min={45} max={95} tall />
       </Card>
       <StatsCard
         title="WITHINGS SLEEP MAT"
+        meta={withingsDataLabel}
         rows={[
           ['Bedtime', formatTime(withingsDashboard.bedtimeAt), colors.text],
           ['Wake Time', formatTime(withingsDashboard.wakeTimeAt), colors.text],
@@ -96,6 +102,7 @@ export function SleepPage({
       />
       <StatsCard
         title="WHOOP SLEEP PERFORMANCE"
+        meta={whoopDataLabel}
         rows={[
           ['Sleep Performance', formatPercentage(dashboard.sleepScore), colors.violet],
           ['Sleep Need', formatMillisecondsAsDuration(dashboard.sleepNeedMilli), colors.text],

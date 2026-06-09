@@ -24,6 +24,8 @@ export type WeeklyStrainPoint = {
 };
 
 export type WhoopRecoveryMetrics = {
+  cycleStartAt?: string;
+  recoveryDate?: string;
   score?: number;
   hrvMs?: number;
   restingHeartRate?: number;
@@ -104,6 +106,11 @@ function normalizeRecovery(payload: unknown): WhoopRecoveryMetrics {
     getNumber(scoreRecord.recoveryScore);
 
   return {
+    cycleStartAt: getString(cycleRecord.startAt) ?? getString(cycleRecord.start_at),
+    recoveryDate:
+      getString(recoveryRecord.date) ??
+      getString(recoveryRecord.createdAt) ??
+      getString(recoveryRecord.created_at),
     score: recoveryScore,
     hrvMs:
       getNumber(recoveryRecord.hrvMs) ??

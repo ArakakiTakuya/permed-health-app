@@ -1,11 +1,11 @@
 import { Text, View } from 'react-native';
 
-import { Card, StatsCard } from '@/src/components/dashboard/cards';
+import { Card, CardMeta, StatsCard } from '@/src/components/dashboard/cards';
 import { BarChart, Ring } from '@/src/components/dashboard/charts';
 import { HeroStat, Label } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
 import { toWeeklyStrainChartData } from '@/src/data/healthChartData';
-import { formatLastSyncedAt, formatMetric, formatScore, roundScore } from '@/src/data/healthFormatters';
+import { formatDataWeekday, formatLastSyncedAt, formatMetric, formatScore, roundScore } from '@/src/data/healthFormatters';
 import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
 import { colors } from '@/src/theme/colors';
 
@@ -19,6 +19,8 @@ export function RecoveryPage({
   dashboard: WhoopRecoveryMetrics;
   lastSyncedAt: Date | null;
 }) {
+  const dataLabel = formatDataWeekday(recovery.recoveryDate ?? recovery.cycleStartAt);
+
   return (
     <View style={styles.panel}>
       <SectionHeader
@@ -27,6 +29,7 @@ export function RecoveryPage({
         subtitle={`WHOOP · ${formatLastSyncedAt(lastSyncedAt)}`}
       />
       <View style={heroStyles.recoveryHero}>
+        <Text style={heroStyles.microWhite}>{dataLabel}</Text>
         <Text style={heroStyles.heroLabel}>RECOVERY SCORE</Text>
         <View style={styles.splitHeader}>
           <View style={styles.centerMetric}>
@@ -57,6 +60,7 @@ export function RecoveryPage({
       </View>
       <Card accent={colors.rose}>
         <Label color={colors.rose}>WEEKLY STRAIN</Label>
+        <CardMeta text={dataLabel} />
         <BarChart
           color={colors.rose}
           data={toWeeklyStrainChartData(recovery.weeklyStrain)}
@@ -65,6 +69,7 @@ export function RecoveryPage({
         />
       </Card>
       <StatsCard
+        meta={dataLabel}
         title="WHOOP Metrics"
         rows={[
           ['Day Strain', formatMetric(recovery.dayStrain, '', 1), colors.rose],

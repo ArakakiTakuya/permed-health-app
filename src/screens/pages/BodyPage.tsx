@@ -1,10 +1,10 @@
 import { View } from 'react-native';
 
-import { Card, MetricCard, StatsCard } from '@/src/components/dashboard/cards';
+import { Card, CardMeta, MetricCard, StatsCard } from '@/src/components/dashboard/cards';
 import { LineChart } from '@/src/components/dashboard/charts';
 import { Label, Legend } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
-import { formatLastSyncedAt, formatMetric, formatMetricValue } from '@/src/data/healthFormatters';
+import { formatDataWeekday, formatLastSyncedAt, formatMetric, formatMetricValue } from '@/src/data/healthFormatters';
 import type { WithingsDashboardMetrics } from '@/src/data/withingsDashboard';
 import { colors } from '@/src/theme/colors';
 
@@ -17,6 +17,8 @@ export function BodyPage({
   dashboard: WithingsDashboardMetrics;
   lastSyncedAt: Date | null;
 }) {
+  const dataLabel = formatDataWeekday(dashboard.bodyMeasuredAt);
+
   return (
     <View style={styles.panel}>
       <SectionHeader
@@ -32,10 +34,12 @@ export function BodyPage({
       </View>
       <Card accent={colors.sky}>
         <Label color={colors.sky}>7-Day Weight Trend</Label>
+        <CardMeta text={dataLabel} />
         <LineChart data={[]} color={colors.sky} min={67} max={69} tall />
       </Card>
       <Card accent={colors.primary}>
         <Label color={colors.primary}>Withings Body Composition</Label>
+        <CardMeta text={dataLabel} />
         <View style={styles.compositionRow}>
           <View style={styles.legendList}>
             <Legend label="Muscle" value={formatMetric(dashboard.muscleMassKg, 'kg', 1)} color={colors.primary} />
@@ -46,6 +50,7 @@ export function BodyPage({
         </View>
       </Card>
       <StatsCard
+        meta={dataLabel}
         title="Withings Metrics"
         rows={[
           ['Visceral Fat', formatLevel(dashboard.visceralFatLevel), colors.sage],

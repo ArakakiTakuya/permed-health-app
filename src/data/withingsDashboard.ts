@@ -12,6 +12,7 @@ export type WithingsDashboardMetrics = {
   proteinPercentage?: number;
   metabolicAge?: number;
   bmrKcal?: number;
+  bodyMeasuredAt?: string;
   bedtimeAt?: string;
   wakeTimeAt?: string;
   latencySeconds?: number;
@@ -43,6 +44,12 @@ function normalizeBody(payload: unknown): WithingsDashboardMetrics {
   const measurements = asRecord(record.measurements);
 
   return {
+    bodyMeasuredAt:
+      getString(record.measuredAt) ??
+      getString(record.measured_at) ??
+      getString(record.date) ??
+      getString(measurements.measuredAt) ??
+      getString(measurements.measured_at),
     weightKg:
       getNumber(record.weightKg) ??
       getNumber(record.weight) ??
