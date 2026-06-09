@@ -10,6 +10,7 @@ import {
   SleepChip,
 } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
+import { hasWhoopData, hasWithingsData } from '@/src/data/healthChartData';
 import {
   formatCount,
   formatMetric,
@@ -154,12 +155,4 @@ export function OverviewPage({
       </Card>
     </View>
   );
-}
-
-function hasWhoopData(dashboard: WhoopRecoveryMetrics) {
-  return typeof dashboard.score === 'number' || typeof dashboard.hrvMs === 'number';
-}
-
-function hasWithingsData(dashboard: WithingsDashboardMetrics) {
-  return typeof dashboard.sleepScore === 'number' || typeof dashboard.weightKg === 'number';
 }

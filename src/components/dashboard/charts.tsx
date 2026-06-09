@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Animated, Easing, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
+import type { BarChartPoint } from '@/src/data/healthChartData';
 import { chartStyles as styles } from '@/src/styles/chartStyles';
 import { colors } from '@/src/theme/colors';
 
@@ -90,11 +91,6 @@ export function LineChart({
   );
 }
 
-type BarChartDatum = {
-  label: string;
-  value?: number | null;
-};
-
 export function BarChart({
   color,
   data,
@@ -102,11 +98,11 @@ export function BarChart({
   ticks = [],
 }: {
   color: string;
-  data: (number | BarChartDatum)[];
+  data: BarChartPoint[];
   maxValue?: number;
   ticks?: number[];
 }) {
-  const values = data.map(getBarValue).filter((value): value is number => typeof value === 'number');
+  const values = data.map((item) => item.value).filter((value): value is number => typeof value === 'number');
   const max = maxValue ?? Math.max(...values, 20);
 
   return (
@@ -129,8 +125,7 @@ export function BarChart({
       ) : null}
       <View style={styles.barPlot}>
         {data.map((item, index) => {
-          const value = getBarValue(item);
-          const label = getBarLabel(item, index);
+          const { label, value } = item;
           const hasValue = typeof value === 'number';
           const height = hasValue ? Math.max(20, getBarHeight(value, max)) : 20;
 
@@ -158,12 +153,4 @@ export function BarChart({
 
 function getBarHeight(value: number, max: number) {
   return Math.max(0, Math.min(112, (value / max) * 112));
-}
-
-function getBarValue(item: number | BarChartDatum) {
-  return typeof item === 'number' ? item : item.value ?? undefined;
-}
-
-function getBarLabel(item: number | BarChartDatum, index: number) {
-  return typeof item === 'number' ? ['M', 'T', 'W', 'T', 'F', 'S', 'S'][index] : item.label;
 }

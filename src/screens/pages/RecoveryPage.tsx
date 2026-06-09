@@ -4,6 +4,7 @@ import { Card, StatsCard } from '@/src/components/dashboard/cards';
 import { BarChart, Ring } from '@/src/components/dashboard/charts';
 import { HeroStat, Label } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
+import { toWeeklyStrainChartData } from '@/src/data/healthChartData';
 import { formatMetric, formatScore, roundScore } from '@/src/data/healthFormatters';
 import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
 import { colors } from '@/src/theme/colors';
@@ -52,10 +53,7 @@ export function RecoveryPage({
         <Label color={colors.rose}>WEEKLY STRAIN</Label>
         <BarChart
           color={colors.rose}
-          data={recovery.weeklyStrain.map((item) => ({
-            label: item.label,
-            value: item.strain,
-          }))}
+          data={toWeeklyStrainChartData(recovery.weeklyStrain)}
           maxValue={20}
           ticks={[0, 10, 20]}
         />

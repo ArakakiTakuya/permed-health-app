@@ -48,10 +48,47 @@ export function formatCount(value: number | undefined) {
   return typeof value === 'number' ? `${Math.round(value)}` : '--';
 }
 
+export function formatPercentage(value: number | undefined) {
+  return typeof value === 'number' ? `${Math.round(value)}%` : '--';
+}
+
+export function formatTime(value: string | undefined) {
+  if (!value) {
+    return '--';
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return '--';
+  }
+
+  return date.toLocaleTimeString([], {
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
+
+export function formatTimeRange(startAt: string | undefined, endAt: string | undefined) {
+  if (!startAt || !endAt) {
+    return '--';
+  }
+
+  return `${formatTime(startAt)} - ${formatTime(endAt)}`;
+}
+
 export function getScoreLabel(value: number | undefined) {
   if (typeof value !== 'number') {
     return '--';
   }
 
   return value >= 80 ? 'Excellent' : value >= 60 ? 'Good' : 'Low';
+}
+
+export function sumMilliseconds(...values: (number | undefined)[]) {
+  if (values.every((value) => typeof value !== 'number')) {
+    return undefined;
+  }
+
+  return values.reduce<number>((total, value) => total + (value ?? 0), 0);
 }

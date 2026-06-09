@@ -8,8 +8,12 @@ import {
   formatCount,
   formatMetric,
   formatMillisecondsAsDuration,
+  formatPercentage,
   formatScore,
   formatSeconds,
+  formatTime,
+  formatTimeRange,
+  sumMilliseconds,
 } from '@/src/data/healthFormatters';
 import type { WithingsDashboardMetrics } from '@/src/data/withingsDashboard';
 import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
@@ -25,7 +29,7 @@ export function SleepPage({
   dashboard: WhoopRecoveryMetrics;
   withingsDashboard: WithingsDashboardMetrics;
 }) {
-  const sleepRange = formatSleepRange(dashboard.sleepStartAt, dashboard.sleepEndAt);
+  const sleepRange = formatTimeRange(dashboard.sleepStartAt, dashboard.sleepEndAt);
   const totalSleepMilli = sumMilliseconds(
     dashboard.totalLightSleepTimeMilli,
     dashboard.totalSlowWaveSleepTimeMilli,
@@ -91,41 +95,4 @@ export function SleepPage({
       />
     </View>
   );
-}
-
-function formatPercentage(value: number | undefined) {
-  return typeof value === 'number' ? `${Math.round(value)}%` : '--';
-}
-
-function formatSleepRange(startAt: string | undefined, endAt: string | undefined) {
-  if (!startAt || !endAt) {
-    return '--';
-  }
-
-  return `${formatTime(startAt)} - ${formatTime(endAt)}`;
-}
-
-function formatTime(value: string | undefined) {
-  if (!value) {
-    return '--';
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return '--';
-  }
-
-  return date.toLocaleTimeString([], {
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-}
-
-function sumMilliseconds(...values: (number | undefined)[]) {
-  if (values.every((value) => typeof value !== 'number')) {
-    return undefined;
-  }
-
-  return values.reduce<number>((total, value) => total + (value ?? 0), 0);
 }
