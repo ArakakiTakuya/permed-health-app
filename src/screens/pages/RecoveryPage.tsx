@@ -5,7 +5,7 @@ import { BarChart, Ring } from '@/src/components/dashboard/charts';
 import { HeroStat, Label } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
 import { toWeeklyStrainChartData } from '@/src/data/healthChartData';
-import { formatMetric, formatScore, roundScore } from '@/src/data/healthFormatters';
+import { formatLastSyncedAt, formatMetric, formatScore, roundScore } from '@/src/data/healthFormatters';
 import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
 import { colors } from '@/src/theme/colors';
 
@@ -14,12 +14,18 @@ import { layoutStyles as styles } from '@/src/styles/layoutStyles';
 
 export function RecoveryPage({
   dashboard: recovery,
+  lastSyncedAt,
 }: {
   dashboard: WhoopRecoveryMetrics;
+  lastSyncedAt: Date | null;
 }) {
   return (
     <View style={styles.panel}>
-      <SectionHeader color={colors.rose} title="Recovery" subtitle="WHOOP · Today" />
+      <SectionHeader
+        color={colors.rose}
+        title="Recovery"
+        subtitle={`WHOOP · ${formatLastSyncedAt(lastSyncedAt)}`}
+      />
       <View style={heroStyles.recoveryHero}>
         <Text style={heroStyles.heroLabel}>RECOVERY SCORE</Text>
         <View style={styles.splitHeader}>

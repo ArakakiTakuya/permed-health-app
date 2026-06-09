@@ -6,6 +6,7 @@ import { Label, SleepChip } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
 import {
   formatCount,
+  formatLastSyncedAt,
   formatMetric,
   formatMillisecondsAsDuration,
   formatPercentage,
@@ -24,9 +25,13 @@ import { layoutStyles as styles } from '@/src/styles/layoutStyles';
 
 export function SleepPage({
   dashboard,
+  whoopLastSyncedAt,
+  withingsLastSyncedAt,
   withingsDashboard,
 }: {
   dashboard: WhoopRecoveryMetrics;
+  whoopLastSyncedAt: Date | null;
+  withingsLastSyncedAt: Date | null;
   withingsDashboard: WithingsDashboardMetrics;
 }) {
   const sleepRange = formatTimeRange(dashboard.sleepStartAt, dashboard.sleepEndAt);
@@ -35,10 +40,16 @@ export function SleepPage({
     dashboard.totalSlowWaveSleepTimeMilli,
     dashboard.totalRemSleepTimeMilli,
   );
+  const withingsSyncLabel = formatLastSyncedAt(withingsLastSyncedAt);
+  const whoopSyncLabel = formatLastSyncedAt(whoopLastSyncedAt).replace('Last synced: ', '');
 
   return (
     <View style={styles.panel}>
-      <SectionHeader color={colors.violet} title="Sleep" subtitle="Withings Sleep Analyzer + WHOOP · Last Night" />
+      <SectionHeader
+        color={colors.violet}
+        title="Sleep"
+        subtitle={`Withings · ${withingsSyncLabel} · WHOOP ${whoopSyncLabel}`}
+      />
       <View style={heroStyles.violetHero}>
         <View style={styles.splitHeader}>
           <View>

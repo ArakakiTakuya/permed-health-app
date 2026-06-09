@@ -5,6 +5,7 @@ import {
   syncWhoopData,
   type WhoopRecoveryMetrics,
 } from '@/src/services/whoopApi';
+import { getLastSyncDate, isSyncStale, markSyncedNow } from '@/src/services/syncMetadata';
 
 const EMPTY_RECOVERY: WhoopRecoveryMetrics = {
   status: '--',
@@ -15,6 +16,7 @@ export function useWhoopRecovery() {
   const [recovery, setRecovery] = useState<WhoopRecoveryMetrics>(EMPTY_RECOVERY);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
 
   const refreshRecovery = useCallback(async () => {
     setErrorMessage(null);
@@ -32,16 +34,52 @@ export function useWhoopRecovery() {
 
   const syncAndRefreshRecovery = useCallback(async () => {
     await syncWhoopData();
+    await markSyncedNow('whoop');
+    setLastSyncedAt(await getLastSyncDate('whoop'));
     await refreshRecovery();
   }, [refreshRecovery]);
 
   useEffect(() => {
-    refreshRecovery();
+    let isMounted = true;
+
+    async function refreshThenSyncIfStale() {
+      await refreshRecovery();
+
+      if (!isMounted || !(await isSyncStale('whoop'))) {
+        return;
+      }
+
+      try {
+        await syncWhoopData();
+        await markSyncedNow('whoop');
+        setLastSyncedAt(await getLastSyncDate('whoop'));
+
+        if (isMounted) {
+          await refreshRecovery();
+        }
+      } catch (error) {
+        if (isMounted) {
+          setErrorMessage(error instanceof Error ? error.message : 'Unable to sync WHOOP recovery.');
+        }
+      }
+    }
+
+    refreshThenSyncIfStale();
+    getLastSyncDate('whoop').then((value) => {
+      if (isMounted) {
+        setLastSyncedAt(value);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, [refreshRecovery]);
 
   return {
     errorMessage,
     isLoading,
+    lastSyncedAt,
     recovery,
     refreshRecovery,
     syncAndRefreshRecovery,

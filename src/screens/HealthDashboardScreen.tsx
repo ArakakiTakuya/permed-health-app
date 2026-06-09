@@ -28,9 +28,14 @@ export function HealthDashboardScreen() {
     status: appleHealthConnectStatus,
   } = useAppleHealthAuth();
   const { user } = useCurrentMobileUser();
-  const { recovery, syncAndRefreshRecovery } = useWhoopRecovery();
+  const {
+    lastSyncedAt: whoopLastSyncedAt,
+    recovery,
+    syncAndRefreshRecovery,
+  } = useWhoopRecovery();
   const {
     dashboard: withingsDashboard,
+    lastSyncedAt: withingsLastSyncedAt,
     syncAndRefreshWithingsDashboard,
   } = useWithingsDashboard();
   const { connectWhoop, status: whoopConnectStatus } = useWhoopAuth({
@@ -79,16 +84,21 @@ export function HealthDashboardScreen() {
           {activeTab === 'body' && (
             <BodyPage
               dashboard={withingsDashboard}
+              lastSyncedAt={withingsLastSyncedAt}
             />
           )}
           {activeTab === 'sleep' && (
             <SleepPage
               dashboard={recovery}
+              whoopLastSyncedAt={whoopLastSyncedAt}
+              withingsLastSyncedAt={withingsLastSyncedAt}
               withingsDashboard={withingsDashboard}
             />
           )}
-          {activeTab === 'recovery' && <RecoveryPage dashboard={recovery} />}
-          {activeTab === 'heart' && <HeartPage dashboard={recovery} />}
+          {activeTab === 'recovery' && (
+            <RecoveryPage dashboard={recovery} lastSyncedAt={whoopLastSyncedAt} />
+          )}
+          {activeTab === 'heart' && <HeartPage dashboard={recovery} lastSyncedAt={whoopLastSyncedAt} />}
         </ScrollView>
 
         <BottomNav activeTab={activeTab} onChange={handleTabChange} onReselect={scrollToTop} />

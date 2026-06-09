@@ -4,16 +4,26 @@ import { Card, MetricCard, StatsCard } from '@/src/components/dashboard/cards';
 import { LineChart } from '@/src/components/dashboard/charts';
 import { Label } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
-import { formatMetric, formatMetricValue } from '@/src/data/healthFormatters';
+import { formatLastSyncedAt, formatMetric, formatMetricValue } from '@/src/data/healthFormatters';
 import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
 import { colors } from '@/src/theme/colors';
 
 import { layoutStyles as styles } from '@/src/styles/layoutStyles';
 
-export function HeartPage({ dashboard }: { dashboard: WhoopRecoveryMetrics }) {
+export function HeartPage({
+  dashboard,
+  lastSyncedAt,
+}: {
+  dashboard: WhoopRecoveryMetrics;
+  lastSyncedAt: Date | null;
+}) {
   return (
     <View style={styles.panel}>
-      <SectionHeader color={colors.rose} title="Heart" subtitle="WHOOP + Withings" />
+      <SectionHeader
+        color={colors.rose}
+        title="Heart"
+        subtitle={`WHOOP + Withings · ${formatLastSyncedAt(lastSyncedAt)}`}
+      />
       <View style={styles.grid2}>
         <MetricCard label="Resting HR" value={formatMetricValue(dashboard.restingHeartRate)} unit="bpm" color={colors.rose} />
         <MetricCard label="HRV (RMSSD)" value={formatMetricValue(dashboard.hrvMs)} unit="ms" color={colors.primary} />

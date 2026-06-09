@@ -83,7 +83,7 @@ export function OverviewPage({
         memberEmail={memberEmail}
         memberName={memberName}
       />
-      <SectionHeader color={colors.primary} title="Daily Scores" subtitle="WHOOP, Withings, Lingo · Today" />
+      <SectionHeader color={colors.primary} title="Daily Scores" subtitle="WHOOP, Withings, Lingo" />
       <View style={styles.grid2}>
         <ScoreCard
           label="WHOOP"
@@ -113,7 +113,6 @@ export function OverviewPage({
           <View style={styles.rightMetric}>
             <Text style={widgetStyles.microMuted}>Time in Range</Text>
             <Text style={[widgetStyles.largeNumber, { color: colors.sage }]}>--</Text>
-            <Text style={widgetStyles.microMuted}>Today</Text>
           </View>
         </View>
         <LineChart data={[]} color={colors.amber} min={70} max={160} />
@@ -122,7 +121,7 @@ export function OverviewPage({
       <Card accent={colors.violet}>
         <View style={styles.splitHeader}>
           <View>
-            <Label color={colors.violet}>Withings · Last Night</Label>
+            <Label color={colors.violet}>Withings</Label>
             <Text style={[widgetStyles.largeNumber, { color: colors.violet }]}>
               {formatSecondsAsDuration(withingsDashboard.totalSleepSeconds)}
             </Text>

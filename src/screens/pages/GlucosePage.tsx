@@ -11,7 +11,7 @@ import { layoutStyles as styles } from '@/src/styles/layoutStyles';
 export function GlucosePage() {
   return (
     <View style={styles.panel}>
-      <SectionHeader color={colors.amber} title="Glucose" subtitle="Abbott Lingo CGM · Today" />
+      <SectionHeader color={colors.amber} title="Glucose" subtitle="Abbott Lingo CGM" />
       <View style={styles.grid2}>
         <MetricCard label="Current" value="--" unit="mg/dL" color={colors.sage} pill="--" />
         <MetricCard label="Daily Avg" value="--" unit="mg/dL" color={colors.amber} pill="--" />

@@ -77,6 +77,19 @@ export function formatTimeRange(startAt: string | undefined, endAt: string | und
   return `${formatTime(startAt)} - ${formatTime(endAt)}`;
 }
 
+export function formatLastSyncedAt(value: Date | null | undefined) {
+  if (!value) {
+    return 'Last synced: --';
+  }
+
+  return `Last synced: ${value.toLocaleString([], {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  })}`;
+}
+
 export function getScoreLabel(value: number | undefined) {
   if (typeof value !== 'number') {
     return '--';

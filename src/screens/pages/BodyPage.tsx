@@ -4,7 +4,7 @@ import { Card, MetricCard, StatsCard } from '@/src/components/dashboard/cards';
 import { LineChart } from '@/src/components/dashboard/charts';
 import { Label, Legend } from '@/src/components/dashboard/metricWidgets';
 import { SectionHeader } from '@/src/components/dashboard/sections';
-import { formatMetric, formatMetricValue } from '@/src/data/healthFormatters';
+import { formatLastSyncedAt, formatMetric, formatMetricValue } from '@/src/data/healthFormatters';
 import type { WithingsDashboardMetrics } from '@/src/data/withingsDashboard';
 import { colors } from '@/src/theme/colors';
 
@@ -12,12 +12,18 @@ import { layoutStyles as styles } from '@/src/styles/layoutStyles';
 
 export function BodyPage({
   dashboard,
+  lastSyncedAt,
 }: {
   dashboard: WithingsDashboardMetrics;
+  lastSyncedAt: Date | null;
 }) {
   return (
     <View style={styles.panel}>
-      <SectionHeader color={colors.sky} title="Body Composition" subtitle="Withings Body Scan · Today" />
+      <SectionHeader
+        color={colors.sky}
+        title="Body Composition"
+        subtitle={`Withings Body Scan · ${formatLastSyncedAt(lastSyncedAt)}`}
+      />
       <View style={styles.grid2}>
         <MetricCard label="Weight" value={formatMetricValue(dashboard.weightKg, 1)} unit="kg" color={colors.sky} />
         <MetricCard label="BMI" value={formatMetricValue(dashboard.bmi, 1)} color={colors.primary} />
