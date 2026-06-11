@@ -1,3 +1,9 @@
+export type WithingsHeartRatePoint = {
+  bpm: number;
+  measuredAt: string;
+  state: number | null;
+};
+
 export type WithingsDashboardMetrics = {
   connected?: boolean;
   weightKg?: number;
@@ -25,6 +31,7 @@ export type WithingsDashboardMetrics = {
   deepSleepSeconds?: number;
   remSleepSeconds?: number;
   lightSleepSeconds?: number;
+  overnightHeartRate?: WithingsHeartRatePoint[];
   sleepScore?: number;
 };
 
@@ -108,6 +115,8 @@ function normalizeBody(payload: unknown): WithingsDashboardMetrics {
 }
 
 function normalizeSleep(payload: unknown): WithingsDashboardMetrics {
+  const payloadRecord = asRecord(payload);
+  const dataRecord = asRecord(payloadRecord.data);
   const record = getDataRecord(payload, 'sleep');
 
   return {
@@ -170,7 +179,36 @@ function normalizeSleep(payload: unknown): WithingsDashboardMetrics {
     sleepScore:
       getNumber(record.sleepScore) ??
       getNumber(record.sleep_score),
+    overnightHeartRate: normalizeHeartRatePoints(
+      payloadRecord.overnightHeartRate ??
+      dataRecord.overnightHeartRate ??
+      record.overnightHeartRate,
+    ),
   };
+}
+
+function normalizeHeartRatePoints(value: unknown): WithingsHeartRatePoint[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.reduce<WithingsHeartRatePoint[]>((points, item) => {
+    const record = asRecord(item);
+    const bpm = getNumber(record.bpm);
+    const measuredAt = getString(record.measuredAt) ?? getString(record.measured_at);
+
+    if (typeof bpm !== 'number' || !measuredAt) {
+      return points;
+    }
+
+    points.push({
+      bpm,
+      measuredAt,
+      state: getNumber(record.state) ?? null,
+    });
+
+    return points;
+  }, []);
 }
 
 function getDataRecord(payload: unknown, nestedKey?: string) {
