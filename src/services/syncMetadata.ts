@@ -2,7 +2,7 @@ import * as SecureStore from 'expo-secure-store';
 
 const STALE_SYNC_INTERVAL_MS = 30 * 60 * 1000;
 
-type SyncSource = 'whoop' | 'withings';
+export type SyncSource = 'whoop' | 'withings';
 
 export async function isSyncStale(source: SyncSource) {
   const lastSyncedAt = await getLastSyncedAt(source);
