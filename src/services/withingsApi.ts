@@ -1,4 +1,4 @@
-import { apiFetch } from '@/src/services/apiClient';
+import { ApiError, apiFetch } from '@/src/services/apiClient';
 import { normalizeWithingsDashboard } from '@/src/data/withingsDashboard';
 import { withingsAppRedirectUri } from '@/src/services/withingsAuth';
 
@@ -25,15 +25,31 @@ export async function syncWithingsData() {
 }
 
 export async function getLatestWithingsDashboard() {
-  const [bodyResponse, sleepResponse] = await Promise.all([
+  const [bodyResult, sleepResult] = await Promise.allSettled([
     apiFetch('/api/withings/body'),
     apiFetch('/api/withings/sleep'),
   ]);
 
   const [bodyData, sleepData] = await Promise.all([
-    bodyResponse.json(),
-    sleepResponse.json(),
+    readOptionalJson(bodyResult),
+    readOptionalJson(sleepResult),
   ]);
 
   return normalizeWithingsDashboard(bodyData, sleepData);
+}
+
+async function readOptionalJson(result: PromiseSettledResult<Response>) {
+  if (result.status === 'rejected') {
+    if (isAuthError(result.reason)) {
+      throw result.reason;
+    }
+
+    return null;
+  }
+
+  return result.value.json();
+}
+
+function isAuthError(error: unknown) {
+  return error instanceof ApiError && (error.status === 401 || error.status === 403);
 }
