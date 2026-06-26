@@ -1,5 +1,6 @@
 import * as WebBrowser from 'expo-web-browser';
 import { useCallback, useState } from 'react';
+import { Alert } from 'react-native';
 
 import {
   getWhoopBackendCallbackUrl,
@@ -22,6 +23,12 @@ export function useWhoopAuth({
   const backendCallbackUrl = getWhoopBackendCallbackUrl();
 
   const connectWhoop = useCallback(async () => {
+    const confirmed = await confirmWhoopConnection();
+
+    if (!confirmed) {
+      return;
+    }
+
     setErrorMessage(null);
 
     try {
@@ -69,4 +76,28 @@ export function useWhoopAuth({
     isReady: Boolean(backendCallbackUrl),
     status,
   };
+}
+
+function confirmWhoopConnection() {
+  return new Promise<boolean>((resolve) => {
+    Alert.alert(
+      'Connect WHOOP?',
+      'You will be sent to WHOOP to authorize Permed Health to access your WHOOP health data.',
+      [
+        {
+          onPress: () => resolve(false),
+          style: 'cancel',
+          text: 'Cancel',
+        },
+        {
+          onPress: () => resolve(true),
+          text: 'Continue',
+        },
+      ],
+      {
+        cancelable: true,
+        onDismiss: () => resolve(false),
+      },
+    );
+  });
 }
