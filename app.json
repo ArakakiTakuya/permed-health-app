@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "permedhealthapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.taku78.permed-health-app"
@@ -41,7 +41,14 @@
         }
       ],
       "expo-web-browser",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "react-native-health",
+        {
+          "healthSharePermission": "Permed Health uses Apple Health data to show your health dashboard metrics.",
+          "healthUpdatePermission": "Permed Health does not write data to Apple Health."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

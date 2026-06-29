@@ -25,6 +25,7 @@ export function HealthDashboardScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
   const {
     connectAppleHealth,
+    snapshot: appleHealthSnapshot,
     status: appleHealthConnectStatus,
   } = useAppleHealthAuth();
   const { user } = useCurrentMobileUser();
@@ -69,6 +70,7 @@ export function HealthDashboardScreen() {
           {activeTab === 'overview' && (
             <OverviewPage
               appleHealthConnectStatus={appleHealthConnectStatus}
+              appleHealthSnapshot={appleHealthSnapshot}
               dashboard={recovery}
               memberEmail={user?.email}
               memberName={user?.name}
@@ -80,7 +82,7 @@ export function HealthDashboardScreen() {
               withingsDashboard={withingsDashboard}
             />
           )}
-          {activeTab === 'glucose' && <GlucosePage />}
+          {activeTab === 'glucose' && <GlucosePage appleHealthSnapshot={appleHealthSnapshot} />}
           {activeTab === 'body' && (
             <BodyPage
               dashboard={withingsDashboard}

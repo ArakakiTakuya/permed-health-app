@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 
 import { Card, CardMeta, ScoreCard } from '@/src/components/dashboard/cards';
 import { LineChart, Ring } from '@/src/components/dashboard/charts';
+import { getGlucoseStatusColor } from '@/src/components/dashboard/glucoseDisplay';
 import {
   InfoBox,
   Label,
@@ -12,9 +13,15 @@ import {
 import { SectionHeader } from '@/src/components/dashboard/sections';
 import { hasWhoopData, hasWithingsData } from '@/src/data/healthChartData';
 import {
+  formatGlucosePercentage,
+  getAppleHealthGlucoseStats,
+  getGlucoseStatusLabel,
+} from '@/src/data/appleHealthGlucose';
+import {
   formatCount,
   formatDataWeekday,
   formatMetric,
+  formatMetricValue,
   formatScore,
   formatSecondsAsDuration,
   getScoreLabel,
@@ -24,6 +31,7 @@ import type { WithingsDashboardMetrics } from '@/src/data/withingsDashboard';
 import type { AppleHealthConnectionStatus } from '@/src/hooks/useAppleHealthAuth';
 import type { WithingsConnectionStatus } from '@/src/hooks/useWithingsAuth';
 import type { WhoopConnectionStatus } from '@/src/hooks/useWhoopAuth';
+import type { AppleHealthSnapshot } from '@/src/services/appleHealth';
 import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
 import { colors } from '@/src/theme/colors';
 
@@ -39,6 +47,7 @@ export function OverviewPage({
   onConnectWhoop,
   onConnectWithings,
   appleHealthConnectStatus,
+  appleHealthSnapshot,
   whoopConnectStatus,
   withingsConnectStatus,
   withingsDashboard,
@@ -50,6 +59,7 @@ export function OverviewPage({
   onConnectWhoop: () => void;
   onConnectWithings: () => void;
   appleHealthConnectStatus: AppleHealthConnectionStatus;
+  appleHealthSnapshot?: AppleHealthSnapshot | null;
   whoopConnectStatus: WhoopConnectionStatus;
   withingsConnectStatus: WithingsConnectionStatus;
   withingsDashboard: WithingsDashboardMetrics;
@@ -59,6 +69,9 @@ export function OverviewPage({
     withingsConnectStatus === 'connected' || hasWithingsData(withingsDashboard);
   const whoopDataLabel = formatDataWeekday(dashboard.recoveryDate ?? dashboard.cycleStartAt);
   const withingsDataLabel = formatDataWeekday(withingsDashboard.sleepDate ?? withingsDashboard.bedtimeAt);
+  const glucoseStats = getAppleHealthGlucoseStats(appleHealthSnapshot);
+  const glucoseDataLabel = formatDataWeekday(glucoseStats.latestMeasuredAt);
+  const currentGlucoseStatusColor = getGlucoseStatusColor(glucoseStats.latestMgDl, colors.faint);
 
   return (
     <View style={styles.panel}>
@@ -108,7 +121,14 @@ export function OverviewPage({
           color={colors.violet}
           pill={getScoreLabel(withingsDashboard.sleepScore)}
         />
-        <ScoreCard label="Lingo" meta={formatDataWeekday(undefined)} title="Time in Range" color={colors.amber} pill="--" />
+        <ScoreCard
+          label="Lingo"
+          meta={glucoseDataLabel}
+          title="Time in Range"
+          score={roundScore(glucoseStats.timeInRangePercentage)}
+          color={colors.amber}
+          pill={getGlucoseStatusLabel(glucoseStats.latestMgDl)}
+        />
         <ScoreCard label="Withings" meta={formatDataWeekday(withingsDashboard.bodyMeasuredAt)} title="Body Score" color={colors.sky} pill="--" />
       </View>
 
@@ -116,16 +136,22 @@ export function OverviewPage({
         <View style={styles.splitHeader}>
           <View>
             <Label color={colors.amber}>Lingo CGM · Now</Label>
-            <CardMeta text={formatDataWeekday(undefined)} />
-            <MetricValue color={colors.amber} value="--" unit="mg/dL" />
-            <Pill color={colors.sage} bg={colors.sageLight} text="--" />
+            <CardMeta text={glucoseDataLabel} />
+            <MetricValue color={colors.amber} value={formatMetricValue(glucoseStats.latestMgDl)} unit="mg/dL" />
+            <Pill
+              color={currentGlucoseStatusColor}
+              bg={`${currentGlucoseStatusColor}1A`}
+              text={getGlucoseStatusLabel(glucoseStats.latestMgDl)}
+            />
           </View>
           <View style={styles.rightMetric}>
             <Text style={widgetStyles.microMuted}>Time in Range</Text>
-            <Text style={[widgetStyles.largeNumber, { color: colors.sage }]}>--</Text>
+            <Text style={[widgetStyles.largeNumber, { color: colors.sage }]}>
+              {formatGlucosePercentage(glucoseStats.timeInRangePercentage)}
+            </Text>
           </View>
         </View>
-        <LineChart data={[]} color={colors.amber} min={70} max={160} />
+        <LineChart data={glucoseStats.chartValues} color={colors.amber} min={60} max={180} />
       </Card>
 
       <Card accent={colors.violet}>
