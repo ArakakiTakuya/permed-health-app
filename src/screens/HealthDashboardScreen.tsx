@@ -72,6 +72,7 @@ export function HealthDashboardScreen() {
               appleHealthConnectStatus={appleHealthConnectStatus}
               appleHealthSnapshot={appleHealthSnapshot}
               dashboard={recovery}
+              lastSyncedAt={getLatestSyncedAt(whoopLastSyncedAt, withingsLastSyncedAt)}
               memberEmail={user?.email}
               memberName={user?.name}
               onConnectAppleHealth={connectAppleHealth}
@@ -107,4 +108,17 @@ export function HealthDashboardScreen() {
       </View>
     </SafeAreaView>
   );
+}
+
+function getLatestSyncedAt(...values: (Date | null)[]) {
+  const timestamps = values
+    .filter((value): value is Date => value instanceof Date)
+    .map((value) => value.getTime())
+    .filter((value) => !Number.isNaN(value));
+
+  if (!timestamps.length) {
+    return null;
+  }
+
+  return new Date(Math.max(...timestamps));
 }

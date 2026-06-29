@@ -40,6 +40,7 @@ import { widgetStyles } from '@/src/styles/widgetStyles';
 
 export function OverviewPage({
   dashboard,
+  lastSyncedAt,
   memberEmail,
   memberName,
   onConnectAppleHealth,
@@ -52,6 +53,7 @@ export function OverviewPage({
   withingsDashboard,
 }: {
   dashboard: WhoopRecoveryMetrics;
+  lastSyncedAt?: Date | null;
   memberEmail?: string | null;
   memberName?: string | null;
   onConnectAppleHealth: () => void;
@@ -95,6 +97,7 @@ export function OverviewPage({
             status: appleHealthConnectStatus,
           },
         ]}
+        lastSyncedAt={lastSyncedAt}
         memberEmail={memberEmail}
         memberName={memberName}
       />

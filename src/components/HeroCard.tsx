@@ -1,5 +1,6 @@
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
+import { formatLastSyncedAt } from '@/src/data/healthFormatters';
 import { heroStyles as styles } from '@/src/styles/heroStyles';
 
 type ConnectionStatus = 'idle' | 'opening' | 'syncing' | 'connected' | 'error';
@@ -13,10 +14,12 @@ type DeviceTag = {
 
 export function HeroCard({
   devices = [],
+  lastSyncedAt,
   memberEmail,
   memberName,
 }: {
   devices?: DeviceTag[];
+  lastSyncedAt?: Date | null;
   memberEmail?: string | null;
   memberName?: string | null;
 }) {
@@ -24,6 +27,7 @@ export function HeroCard({
   const displayInitial = displayName === '--' ? '-' : displayName.charAt(0).toUpperCase();
   const activeDeviceCount = devices.filter((device) => device.connected).length;
   const activeDeviceText = `${activeDeviceCount}/${devices.length} Active`;
+  const lastSyncedLabel = formatLastSyncedAt(lastSyncedAt).replace('Last synced: ', '');
 
   return (
     <View style={styles.hero}>
@@ -71,7 +75,7 @@ export function HeroCard({
         })}
       </View>
       <View style={styles.heroFooter}>
-        <Text style={styles.heroSync}>Last synced: <Text style={styles.monoWhite}>--</Text></Text>
+        <Text style={styles.heroSync}>Last synced: <Text style={styles.monoWhite}>{lastSyncedLabel}</Text></Text>
         <View style={styles.whitePill}>
           <Text style={styles.whitePillText}>{activeDeviceText}</Text>
         </View>
