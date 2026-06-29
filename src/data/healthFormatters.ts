@@ -23,8 +23,7 @@ export function formatSecondsAsDuration(value: number | undefined) {
     return '--';
   }
 
-  const durationMinutes = Math.round(value / 60);
-  return `${Math.floor(durationMinutes / 60)}h ${durationMinutes % 60}m`;
+  return formatDurationMinutes(Math.round(value / 60));
 }
 
 export function formatMillisecondsAsDuration(value: number | undefined) {
@@ -32,8 +31,14 @@ export function formatMillisecondsAsDuration(value: number | undefined) {
     return '--';
   }
 
-  const durationMinutes = Math.round(value / (60 * 1000));
-  return `${Math.floor(durationMinutes / 60)}h ${durationMinutes % 60}m`;
+  return formatDurationMinutes(Math.round(value / (60 * 1000)));
+}
+
+function formatDurationMinutes(durationMinutes: number) {
+  const hours = Math.floor(durationMinutes / 60);
+  const minutes = durationMinutes % 60;
+
+  return `${hours}:${String(minutes).padStart(2, '0')}`;
 }
 
 export function formatSeconds(value: number | undefined) {

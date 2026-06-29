@@ -13,9 +13,9 @@ import {
   formatPercentage,
   formatScore,
   formatSeconds,
+  formatSecondsAsDuration,
   formatTime,
   formatTimeRange,
-  sumMilliseconds,
 } from '@/src/data/healthFormatters';
 import type { WithingsDashboardMetrics } from '@/src/data/withingsDashboard';
 import type { WhoopRecoveryMetrics } from '@/src/services/whoopApi';
@@ -35,16 +35,16 @@ export function SleepPage({
   withingsLastSyncedAt: Date | null;
   withingsDashboard: WithingsDashboardMetrics;
 }) {
-  const sleepRange = formatTimeRange(dashboard.sleepStartAt, dashboard.sleepEndAt);
-  const totalSleepMilli = sumMilliseconds(
-    dashboard.totalLightSleepTimeMilli,
-    dashboard.totalSlowWaveSleepTimeMilli,
-    dashboard.totalRemSleepTimeMilli,
-  );
+  const sleepRange = formatTimeRange(withingsDashboard.bedtimeAt, withingsDashboard.wakeTimeAt);
   const withingsDataLabel = formatDataWeekday(withingsDashboard.sleepDate ?? withingsDashboard.bedtimeAt);
   const whoopDataLabel = formatDataWeekday(dashboard.sleepStartAt);
   const withingsSyncLabel = formatLastSyncedAt(withingsLastSyncedAt);
   const whoopSyncLabel = formatLastSyncedAt(whoopLastSyncedAt).replace('Last synced: ', '');
+  const withingsSleepEfficiency = getSleepEfficiencyPercentage(
+    withingsDashboard.bedtimeAt,
+    withingsDashboard.wakeTimeAt,
+    withingsDashboard.totalSleepSeconds,
+  );
 
   return (
     <View style={styles.panel}>
@@ -54,32 +54,32 @@ export function SleepPage({
         subtitle={`Withings · ${withingsSyncLabel} · WHOOP ${whoopSyncLabel}`}
       />
       <View style={heroStyles.violetHero}>
-        <Text style={heroStyles.microWhite}>{whoopDataLabel}</Text>
+        <Text style={heroStyles.microWhite}>{withingsDataLabel}</Text>
         <View style={styles.splitHeader}>
           <View>
             <Text style={heroStyles.heroLabel}>TOTAL SLEEP</Text>
             <Text style={heroStyles.heroNumber}>
-              {formatMillisecondsAsDuration(totalSleepMilli)}
+              {formatSecondsAsDuration(withingsDashboard.totalSleepSeconds)}
             </Text>
             <Text style={heroStyles.heroText}>
               Sleep Score:{' '}
-              <Text style={heroStyles.boldWhite}>{formatScore(dashboard.sleepScore)}</Text>
+              <Text style={heroStyles.boldWhite}>{formatScore(withingsDashboard.sleepScore)}</Text>
             </Text>
           </View>
           <View style={styles.rightMetric}>
             <Text style={heroStyles.microWhite}>{sleepRange}</Text>
             <View style={heroStyles.whitePill}>
               <Text style={heroStyles.whitePillText}>
-                {formatPercentage(dashboard.sleepEfficiencyPercentage)} Efficient
+                {formatPercentage(withingsSleepEfficiency)} Efficient
               </Text>
             </View>
           </View>
         </View>
         <View style={styles.grid4}>
-          <SleepChip label="AWAKE" value={formatMillisecondsAsDuration(dashboard.totalAwakeTimeMilli)} translucent />
-          <SleepChip label="REM" value={formatMillisecondsAsDuration(dashboard.totalRemSleepTimeMilli)} translucent />
-          <SleepChip label="LIGHT" value={formatMillisecondsAsDuration(dashboard.totalLightSleepTimeMilli)} translucent />
-          <SleepChip label="DEEP" value={formatMillisecondsAsDuration(dashboard.totalSlowWaveSleepTimeMilli)} translucent />
+          <SleepChip label="AWAKE" value={formatSecondsAsDuration(withingsDashboard.awakeSleepSeconds)} translucent />
+          <SleepChip label="REM" value={formatSecondsAsDuration(withingsDashboard.remSleepSeconds)} translucent />
+          <SleepChip label="LIGHT" value={formatSecondsAsDuration(withingsDashboard.lightSleepSeconds)} translucent />
+          <SleepChip label="DEEP" value={formatSecondsAsDuration(withingsDashboard.deepSleepSeconds)} translucent />
         </View>
       </View>
       <Card accent={colors.violet}>
@@ -121,4 +121,23 @@ export function SleepPage({
       />
     </View>
   );
+}
+
+function getSleepEfficiencyPercentage(
+  bedtimeAt: string | undefined,
+  wakeTimeAt: string | undefined,
+  totalSleepSeconds: number | undefined,
+) {
+  if (!bedtimeAt || !wakeTimeAt || typeof totalSleepSeconds !== 'number') {
+    return undefined;
+  }
+
+  const bedtime = new Date(bedtimeAt).getTime();
+  const wakeTime = new Date(wakeTimeAt).getTime();
+
+  if (Number.isNaN(bedtime) || Number.isNaN(wakeTime) || wakeTime <= bedtime) {
+    return undefined;
+  }
+
+  return (totalSleepSeconds / ((wakeTime - bedtime) / 1000)) * 100;
 }
