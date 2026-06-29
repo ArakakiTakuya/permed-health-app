@@ -13,7 +13,6 @@ import {
   formatPercentage,
   formatScore,
   formatSeconds,
-  formatSecondsAsDuration,
   formatTime,
   formatTimeRange,
 } from '@/src/data/healthFormatters';
@@ -59,7 +58,7 @@ export function SleepPage({
           <View>
             <Text style={heroStyles.heroLabel}>TOTAL SLEEP</Text>
             <Text style={heroStyles.heroNumber}>
-              {formatSecondsAsDuration(withingsDashboard.totalSleepSeconds)}
+              {formatSleepSecondsAsDuration(withingsDashboard.totalSleepSeconds)}
             </Text>
             <Text style={heroStyles.heroText}>
               Sleep Score:{' '}
@@ -76,10 +75,10 @@ export function SleepPage({
           </View>
         </View>
         <View style={styles.grid4}>
-          <SleepChip label="AWAKE" value={formatSecondsAsDuration(withingsDashboard.awakeSleepSeconds)} translucent />
-          <SleepChip label="REM" value={formatSecondsAsDuration(withingsDashboard.remSleepSeconds)} translucent />
-          <SleepChip label="LIGHT" value={formatSecondsAsDuration(withingsDashboard.lightSleepSeconds)} translucent />
-          <SleepChip label="DEEP" value={formatSecondsAsDuration(withingsDashboard.deepSleepSeconds)} translucent />
+          <SleepChip label="AWAKE" value={formatSleepSecondsAsDuration(withingsDashboard.awakeSleepSeconds)} translucent />
+          <SleepChip label="REM" value={formatSleepSecondsAsDuration(withingsDashboard.remSleepSeconds)} translucent />
+          <SleepChip label="LIGHT" value={formatSleepSecondsAsDuration(withingsDashboard.lightSleepSeconds)} translucent />
+          <SleepChip label="DEEP" value={formatSleepSecondsAsDuration(withingsDashboard.deepSleepSeconds)} translucent />
         </View>
       </View>
       <Card accent={colors.violet}>
@@ -140,4 +139,12 @@ function getSleepEfficiencyPercentage(
   }
 
   return (totalSleepSeconds / ((wakeTime - bedtime) / 1000)) * 100;
+}
+
+function formatSleepSecondsAsDuration(value: number | undefined) {
+  if (typeof value !== 'number') {
+    return '--';
+  }
+
+  return formatMillisecondsAsDuration(value * 1000);
 }
