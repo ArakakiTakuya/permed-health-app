@@ -18,7 +18,6 @@ import {
   getGlucoseStatusLabel,
 } from '@/src/data/appleHealthGlucose';
 import {
-  formatCount,
   formatDataWeekday,
   formatMetric,
   formatMetricValue,
@@ -169,7 +168,7 @@ export function OverviewPage({
           <Ring score={roundScore(withingsDashboard.sleepScore)} color={colors.violet} />
         </View>
         <View style={styles.grid4}>
-          <SleepChip label="AWAKE" value={formatCount(withingsDashboard.interruptions)} color={colors.rose} />
+          <SleepChip label="AWAKE" value={formatSecondsAsDuration(withingsDashboard.awakeSleepSeconds)} color={colors.rose} />
           <SleepChip label="REM" value={formatSecondsAsDuration(withingsDashboard.remSleepSeconds)} color={colors.violet} />
           <SleepChip label="LIGHT" value={formatSecondsAsDuration(withingsDashboard.lightSleepSeconds)} color={colors.sky} />
           <SleepChip label="DEEP" value={formatSecondsAsDuration(withingsDashboard.deepSleepSeconds)} color={colors.primary} />

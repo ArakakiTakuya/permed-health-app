@@ -24,6 +24,7 @@ export type WithingsDashboardMetrics = {
   latencySeconds?: number;
   snoringSeconds?: number;
   interruptions?: number;
+  awakeSleepSeconds?: number;
   apneaIndex?: number;
   averageNightHeartRate?: number;
   sleepDate?: string;
@@ -118,21 +119,28 @@ function normalizeSleep(payload: unknown): WithingsDashboardMetrics {
   const payloadRecord = asRecord(payload);
   const dataRecord = asRecord(payloadRecord.data);
   const record = getDataRecord(payload, 'sleep');
+  const bedtimeAt =
+    getString(record.bedtimeAt) ??
+    getString(record.bedtime) ??
+    getString(record.startAt) ??
+    getString(record.start_at);
+  const wakeTimeAt =
+    getString(record.wakeTimeAt) ??
+    getString(record.wakeTime) ??
+    getString(record.endAt) ??
+    getString(record.end_at);
+  const totalSleepSeconds =
+    getNumber(record.totalSleepSeconds) ??
+    getNumber(record.totalSleepTime) ??
+    getNumber(record.total_sleep_seconds) ??
+    getNumber(record.total_sleep_time);
 
   return {
     sleepDate:
       getString(record.sleepDate) ??
       getString(record.sleep_date),
-    bedtimeAt:
-      getString(record.bedtimeAt) ??
-      getString(record.bedtime) ??
-      getString(record.startAt) ??
-      getString(record.start_at),
-    wakeTimeAt:
-      getString(record.wakeTimeAt) ??
-      getString(record.wakeTime) ??
-      getString(record.endAt) ??
-      getString(record.end_at),
+    bedtimeAt,
+    wakeTimeAt,
     latencySeconds:
       getNumber(record.sleepLatencySeconds) ??
       getNumber(record.sleep_latency_seconds) ??
@@ -145,6 +153,16 @@ function normalizeSleep(payload: unknown): WithingsDashboardMetrics {
       getNumber(record.interruptions) ??
       getNumber(record.wakeupCount) ??
       getNumber(record.wakeup_count),
+    awakeSleepSeconds:
+      getNumber(record.awakeSleepSeconds) ??
+      getNumber(record.awakeSleepDuration) ??
+      getNumber(record.awake_sleep_seconds) ??
+      getNumber(record.awake_sleep_duration) ??
+      getNumber(record.awakeSeconds) ??
+      getNumber(record.awakeDuration) ??
+      getNumber(record.awake_seconds) ??
+      getNumber(record.awake_duration) ??
+      estimateAwakeSeconds(bedtimeAt, wakeTimeAt, totalSleepSeconds),
     apneaIndex:
       getNumber(record.apneaHypopneaIndex) ??
       getNumber(record.apnea_hypopnea_index) ??
@@ -156,11 +174,7 @@ function normalizeSleep(payload: unknown): WithingsDashboardMetrics {
       getNumber(record.averageNightHeartRate) ??
       getNumber(record.avgNightHr) ??
       getNumber(record.average_heart_rate),
-    totalSleepSeconds:
-      getNumber(record.totalSleepSeconds) ??
-      getNumber(record.totalSleepTime) ??
-      getNumber(record.total_sleep_seconds) ??
-      getNumber(record.total_sleep_time),
+    totalSleepSeconds,
     deepSleepSeconds:
       getNumber(record.deepSleepSeconds) ??
       getNumber(record.deepSleepDuration) ??
@@ -185,6 +199,28 @@ function normalizeSleep(payload: unknown): WithingsDashboardMetrics {
       record.overnightHeartRate,
     ),
   };
+}
+
+function estimateAwakeSeconds(
+  bedtimeAt: string | undefined,
+  wakeTimeAt: string | undefined,
+  totalSleepSeconds: number | undefined,
+) {
+  if (!bedtimeAt || !wakeTimeAt || typeof totalSleepSeconds !== 'number') {
+    return undefined;
+  }
+
+  const bedtime = new Date(bedtimeAt).getTime();
+  const wakeTime = new Date(wakeTimeAt).getTime();
+
+  if (Number.isNaN(bedtime) || Number.isNaN(wakeTime) || wakeTime <= bedtime) {
+    return undefined;
+  }
+
+  const timeInBedSeconds = (wakeTime - bedtime) / 1000;
+  const awakeSeconds = timeInBedSeconds - totalSleepSeconds;
+
+  return awakeSeconds > 0 ? awakeSeconds : undefined;
 }
 
 function normalizeHeartRatePoints(value: unknown): WithingsHeartRatePoint[] {
