@@ -41,6 +41,9 @@ export const widgetStyles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
+  pillCentered: {
+    alignSelf: 'center',
+  },
   pillText: {
     fontSize: 11,
     fontWeight: '800',

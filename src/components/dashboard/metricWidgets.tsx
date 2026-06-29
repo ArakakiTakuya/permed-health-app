@@ -8,9 +8,19 @@ export function Label({ children, color = colors.faint }: { children: ReactNode;
   return <Text style={[styles.label, { color }]}>{children}</Text>;
 }
 
-export function Pill({ color, bg, text }: { color: string; bg: string; text: string }) {
+export function Pill({
+  bg,
+  centered,
+  color,
+  text,
+}: {
+  bg: string;
+  centered?: boolean;
+  color: string;
+  text: string;
+}) {
   return (
-    <View style={[styles.pill, { backgroundColor: bg }]}>
+    <View style={[styles.pill, centered && styles.pillCentered, { backgroundColor: bg }]}>
       <Text style={[styles.pillText, { color }]}>{text}</Text>
     </View>
   );

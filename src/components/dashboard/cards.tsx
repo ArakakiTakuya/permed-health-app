@@ -43,7 +43,7 @@ export function ScoreCard({
       <Text style={styles.scoreTitle}>{title}</Text>
       <Ring score={score} color={color} />
       <View style={layoutStyles.center}>
-        <Pill color={color} bg={`${color}1A`} text={pill} />
+        <Pill centered color={color} bg={`${color}1A`} text={pill} />
       </View>
     </Card>
   );
