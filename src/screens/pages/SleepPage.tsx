@@ -103,7 +103,6 @@ export function SleepPage({
           ['Latency', formatSeconds(withingsDashboard.latencySeconds), colors.sage],
           ['Snoring', formatSeconds(withingsDashboard.snoringSeconds), colors.sage],
           ['Interruptions', formatCount(withingsDashboard.interruptions), colors.amber],
-          ['Apnea Index', formatMetric(withingsDashboard.apneaIndex, '/hr', 1), colors.sage],
           ['Avg Night HR', formatMetric(withingsDashboard.averageNightHeartRate, 'bpm'), colors.violet],
         ]}
       />
