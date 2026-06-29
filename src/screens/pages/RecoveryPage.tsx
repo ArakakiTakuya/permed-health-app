@@ -29,12 +29,12 @@ export function RecoveryPage({
         subtitle={`WHOOP · ${formatLastSyncedAt(lastSyncedAt)}`}
       />
       <View style={heroStyles.recoveryHero}>
-        <Text style={heroStyles.microWhite}>{dataLabel}</Text>
         <Text style={heroStyles.heroLabel}>RECOVERY SCORE</Text>
+        <Text style={heroStyles.microWhite}>{dataLabel}</Text>
         <View style={styles.splitHeader}>
           <View style={styles.centerMetric}>
             <Text style={heroStyles.recoveryNumber}>{formatScore(recovery.score)}</Text>
-            <Text style={heroStyles.heroText}>Recovery</Text>
+            <Text style={[heroStyles.heroText, heroStyles.recoveryScoreLabel]}>Recovery</Text>
             <View style={[heroStyles.whitePill, heroStyles.recoveryStatusPill]}>
               <Text style={heroStyles.whitePillText}>{recovery.status}</Text>
             </View>

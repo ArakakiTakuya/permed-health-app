@@ -148,7 +148,7 @@ export const heroStyles = StyleSheet.create({
     fontWeight: '800',
   },
   recoveryStatusPill: {
-    marginTop: 6,
+    marginTop: 9,
   },
   violetHero: {
     padding: 20,
@@ -193,6 +193,9 @@ export const heroStyles = StyleSheet.create({
     fontSize: 56,
     fontWeight: '300',
     lineHeight: 60,
+  },
+  recoveryScoreLabel: {
+    marginTop: 8,
   },
   heroStats: {
     alignItems: 'flex-end',
