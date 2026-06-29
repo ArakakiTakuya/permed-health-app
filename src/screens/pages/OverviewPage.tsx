@@ -181,7 +181,6 @@ export function OverviewPage({
         <View style={styles.ringRow}>
           <Ring score={roundScore(dashboard.score)} color={colors.primary} label="Recovery" />
           <Ring score={roundScore(dashboard.sleepScore)} color={colors.violet} label="Sleep" />
-          <Ring color={colors.rose} label="Strain" />
         </View>
         <View style={styles.grid3}>
           <InfoBox label="HRV" value={formatMetric(dashboard.hrvMs, 'ms')} />
