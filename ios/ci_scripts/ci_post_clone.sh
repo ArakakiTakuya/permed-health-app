@@ -2,6 +2,5 @@
 set -e
 
 echo "Running pod install..."
-cd ..
-cd ios
+cd "$(dirname "$0")/.."
 pod install
