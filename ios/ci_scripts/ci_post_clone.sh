@@ -1,14 +1,15 @@
 #!/bin/sh
 set -e
 
-echo "Installing Node.js..."
-brew install node
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
-echo "Node version:"
-node -v
-npm -v
+echo "Node path:"
+which node || true
+node -v || true
+npm -v || true
 
-cd ..
+cd ../..
+
 npm install
 
 cd ios
